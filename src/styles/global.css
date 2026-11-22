@@ -401,9 +401,14 @@ button:focus-visible {
 	display: inline;
 }
 
+/* Until the random portrait is chosen (or without JavaScript), the empty image takes no space */
+.hero-frame img:not([src]) {
+	display: none;
+}
+
 /* The caught sticker takes the place of the portrait, keeping the frame's size */
 .hero-portrait.is-caught .hero-awake {
-	aspect-ratio: 1001 / 1200;
+	aspect-ratio: var(--hero-ratio, 1001 / 1200);
 	object-fit: contain;
 	background: var(--bg-raised);
 }

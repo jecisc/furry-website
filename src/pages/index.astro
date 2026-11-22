@@ -9,6 +9,20 @@ import content from '../data/content.json';
 import artPieces from '../data/art.json';
 
 const heroPiece = artPieces.find((piece) => piece.id === 'watercolour-portrait');
+/* The portrait at the top is picked at random among these on each visit */
+const heroChoices = ['yacrical-hoodie', 'banana-sinotus', 'watercolour-portrait', 'bre-hoodie', 'falvie-jecisc']
+	.map((id) => artPieces.find((piece) => piece.id === id))
+	.filter((piece) => piece !== undefined)
+	.map((piece) => {
+		const isMine = piece.artist === content.name;
+		return {
+			file: piece.file,
+			width: piece.width,
+			height: piece.height,
+			alt: isMine ? 'Watercolour portrait of Jecisc, a red dragon' : `Jecisc, a red dragon, drawn by ${piece.artist}`,
+			caption: isMine ? 'Watercolour by me' : `Me, by ${piece.artist}`,
+		};
+	});
 const sleepingSticker = artPieces.find((piece) => piece.id === 'sticker-sleep-plush');
 const peekingSticker = artPieces.find((piece) => piece.id === 'sticker-brick');
 const artSection = artPieces.filter((piece) => piece.section === 'art');
@@ -35,9 +49,12 @@ const year = new Date().getFullYear();
 				</div>
 				{
 					heroPiece && (
-						<figure class="hero-portrait" id="hero-portrait">
+						<figure class="hero-portrait" id="hero-portrait" data-hero-choices={JSON.stringify(heroChoices)}>
 							<div class="hero-frame">
-								<img class="hero-awake" src={heroPiece.file} alt="Watercolour portrait of Jecisc, a red dragon" width="1001" height="1200" />
+								<img class="hero-awake" alt="" />
+								<noscript>
+									<img class="hero-awake" src={heroPiece.file} alt="Watercolour portrait of Jecisc, a red dragon" width={heroPiece.width} height={heroPiece.height} />
+								</noscript>
 								{sleepingSticker && <img class="hero-asleep" src={sleepingSticker.file} alt="" aria-hidden="true" />}
 							</div>
 							<figcaption>
@@ -45,6 +62,21 @@ const year = new Date().getFullYear();
 								<span class="caption-asleep">Shh. I'm napping. Move to wake me up.</span>
 								<span class="caption-caught">You caught me! I'll stay here until you refresh the page.</span>
 							</figcaption>
+							{/* Runs while the page is parsed, so only the chosen image is downloaded and nothing flickers */}
+							<script is:inline>
+								(() => {
+									const figure = document.currentScript.closest('figure');
+									const choices = JSON.parse(figure.dataset.heroChoices);
+									const choice = choices[Math.floor(Math.random() * choices.length)];
+									const image = figure.querySelector('.hero-awake');
+									image.width = choice.width;
+									image.height = choice.height;
+									image.alt = choice.alt;
+									image.src = choice.file;
+									figure.style.setProperty('--hero-ratio', `${choice.width} / ${choice.height}`);
+									figure.querySelector('.caption-awake').textContent = choice.caption;
+								})();
+							</script>
 						</figure>
 					)
 				}
