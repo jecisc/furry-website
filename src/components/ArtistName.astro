@@ -1,0 +1,24 @@
+---
+import artists from '../data/artists.json';
+
+/**
+ * Name of an artist, linked to their page (opening in a new tab) when src/data/artists.json has one, plain text otherwise.
+ */
+interface Props {
+	/** Artist name as written in art.json */
+	artist: string;
+}
+
+const { artist } = Astro.props;
+const url = (artists as Record<string, string>)[artist];
+---
+
+{
+	url ? (
+		<a class="artist-link" href={url} target="_blank" rel="noopener noreferrer">
+			{artist}
+		</a>
+	) : (
+		artist
+	)
+}

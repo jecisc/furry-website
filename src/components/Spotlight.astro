@@ -1,4 +1,7 @@
 ---
+import ArtistName from './ArtistName.astro';
+import artists from '../data/artists.json';
+
 interface Props {
 	piece: {
 		file: string;
@@ -18,7 +21,7 @@ const alt = `Artwork of Jecisc by ${artist}`;
 <div class="spotlight">
 	<figure class:list={['spotlight-figure', isGated && 'is-blurred']} style={`--ratio: ${(piece.width / piece.height).toFixed(4)}`}>
 		<div class="spotlight-frame">
-			<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-caption={`by ${artist}`}>
+			<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
 				<img src={piece.file} alt={alt} width={piece.width} height={piece.height} loading="lazy" />
 			</button>
 			{
@@ -34,7 +37,7 @@ const alt = `Artwork of Jecisc by ${artist}`;
 		<p class="eyebrow">Spotlight</p>
 		<h3>The one that set the mood</h3>
 		<p>
-			By {artist}. I love its neon glow and late-night colours so much that they inspired the whole look of my site.
+			By <ArtistName artist={artist} />. I love its neon glow and late-night colours so much that they inspired the whole look of my site.
 		</p>
 	</div>
 </div>

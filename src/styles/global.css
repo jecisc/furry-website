@@ -622,6 +622,20 @@ button:focus-visible {
 	color: var(--muted);
 }
 
+/* Artist credits linked to the artist's page */
+.artist-link {
+	color: var(--pink-soft);
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--pink-soft) 40%, transparent);
+	text-underline-offset: 0.2em;
+	transition: text-decoration-color 0.2s ease;
+}
+
+.artist-link:hover,
+.artist-link:focus-visible {
+	text-decoration-color: currentColor;
+}
+
 .is-blurred img {
 	filter: blur(24px) saturate(0.7);
 }

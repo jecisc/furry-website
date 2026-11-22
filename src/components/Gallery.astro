@@ -1,4 +1,7 @@
 ---
+import ArtistName from './ArtistName.astro';
+import artists from '../data/artists.json';
+
 interface Piece {
 	id: string;
 	file: string;
@@ -31,7 +34,7 @@ const { pieces, layout = 'justified' } = Astro.props;
 				<li style={`--ratio: ${(piece.width / piece.height).toFixed(4)}`}>
 					<figure class:list={['piece', isGated && 'is-blurred']}>
 						<div class="piece-frame">
-							<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-caption={`by ${artist}`}>
+							<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
 								<img src={piece.file} alt={alt} width={piece.width} height={piece.height} loading="lazy" />
 							</button>
 							{isGated && (
@@ -40,7 +43,9 @@ const { pieces, layout = 'justified' } = Astro.props;
 								</button>
 							)}
 						</div>
-						<figcaption>by {artist}</figcaption>
+						<figcaption>
+							by <ArtistName artist={artist} />
+						</figcaption>
 					</figure>
 				</li>
 			);

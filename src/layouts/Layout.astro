@@ -406,7 +406,19 @@ const { title, description, image } = Astro.props;
 				const button = zoomItems[zoomIndex];
 				zoomImage.src = button.dataset.zoom ?? '';
 				zoomImage.alt = button.dataset.alt ?? '';
-				zoomCaption.textContent = button.dataset.caption ?? '';
+				const artist = button.dataset.artist ?? '';
+				const artistUrl = button.dataset.artistUrl;
+				if (artistUrl) {
+					const link = document.createElement('a');
+					link.className = 'artist-link';
+					link.href = artistUrl;
+					link.target = '_blank';
+					link.rel = 'noopener noreferrer';
+					link.textContent = artist;
+					zoomCaption.replaceChildren('by ', link);
+				} else {
+					zoomCaption.textContent = `by ${artist}`;
+				}
 				const hasSeveral = zoomItems.length > 1;
 				zoomPrevious.hidden = !hasSeveral;
 				zoomNext.hidden = !hasSeveral;
