@@ -1,11 +1,117 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Jecisc</title>
-	</head>
-	<body>
-		<h1>Jecisc</h1>
-	</body>
-</html>
+---
+import Layout from '../layouts/Layout.astro';
+import Gallery from '../components/Gallery.astro';
+import Hoard from '../components/Hoard.astro';
+import content from '../data/content.json';
+import artPieces from '../data/art.json';
+
+const heroPiece = artPieces.find((piece) => piece.id === 'watercolour-portrait');
+const artSection = artPieces.filter((piece) => piece.section === 'art');
+const stickerSection = artPieces.filter((piece) => piece.section === 'stickers');
+const year = new Date().getFullYear();
+
+const navigationItems = [
+	{ label: 'Character', href: '#character' },
+	{ label: 'Art', href: '#art' },
+	{ label: 'Stickers', href: '#stickers' },
+	{ label: 'Links', href: '#links' },
+];
+---
+
+<Layout title={`${content.name} · red dragon from the north of France`} description={content.intro} image={heroPiece?.file}>
+	<header class="site-header">
+		<div class="wrap">
+			<a class="brand" href="#top">{content.name}</a>
+			<nav class="site-nav" aria-label="Sections">
+				{navigationItems.map((item) => <a href={item.href}>{item.label}</a>)}
+			</nav>
+			<button type="button" class="theme-toggle" id="theme-toggle">Dark mode</button>
+		</div>
+	</header>
+
+	<main id="main">
+		<section class="hero" id="top">
+			<div class="wrap">
+				<div>
+					<h1>{content.name}</h1>
+					<p>{content.intro}</p>
+				</div>
+				{
+					heroPiece && (
+						<figure class="hero-image">
+							<img src={heroPiece.file} alt="Watercolour portrait of Jecisc, a red dragon" width="1200" height="1500" />
+						</figure>
+					)
+				}
+			</div>
+		</section>
+
+		<section class="section" id="character">
+			<div class="wrap character-grid">
+				<div>
+					<h2>Character</h2>
+					{content.description.map((paragraph) => <p>{paragraph}</p>)}
+				</div>
+				<dl class="facts">
+					<dt>Species</dt>
+					<dd>Red dragon</dd>
+					<dt>From</dt>
+					<dd>The north of France</dd>
+					<dt>Traits</dt>
+					<dd>
+						<ul class="tag-list">
+							{content.traits.map((trait) => <li>{trait}</li>)}
+						</ul>
+					</dd>
+					<dt>Outfits</dt>
+					<dd>
+						<ul class="tag-list">
+							{content.outfits.map((outfit) => <li>{outfit}</li>)}
+						</ul>
+					</dd>
+				</dl>
+			</div>
+		</section>
+
+		<section class="section" id="art">
+			<div class="wrap">
+				<h2>Art</h2>
+				<p class="section-intro">Pieces of Jecisc, each credited to its artist. Gated pieces are blurred until you confirm. Click any piece to zoom.</p>
+				<Gallery pieces={artSection} />
+			</div>
+		</section>
+
+		<section class="section" id="stickers">
+			<div class="wrap">
+				<h2>Stickers</h2>
+				<p class="section-intro">Stickers of Jecisc. Click any sticker to zoom.</p>
+				<Gallery pieces={stickerSection} />
+			</div>
+		</section>
+
+		<section class="section" id="links">
+			<div class="wrap">
+				<h2>Links</h2>
+				{
+					content.socials.length > 0 ? (
+						<ul class="artist-list">
+							{content.socials.map((social) => (
+								<li>
+									<a href={social.url} rel="me noreferrer">{social.label}</a>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p class="links-empty">{content.linksEmptyNote}</p>
+					)
+				}
+			</div>
+		</section>
+	</main>
+
+	<Hoard />
+
+	<footer class="site-footer">
+		<div class="wrap">© {year} · {content.name}</div>
+	</footer>
+</Layout>

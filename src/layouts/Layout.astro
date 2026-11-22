@@ -1,0 +1,162 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: string;
+}
+
+const { title, description, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		{image && <meta property="og:image" content={image} />}
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<title>{title}</title>
+		<script is:inline>
+			try {
+				const savedTheme = localStorage.getItem('site-theme');
+				if (savedTheme === 'light' || savedTheme === 'dark') {
+					document.documentElement.dataset.theme = savedTheme;
+				}
+				if (localStorage.getItem('site-hoard') === 'hidden') {
+					document.documentElement.dataset.hoard = 'hidden';
+				}
+			} catch (error) {}
+		</script>
+	</head>
+	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
+		<slot />
+		<dialog class="zoom-dialog" id="zoom-dialog" aria-label="Zoomed artwork">
+			<figure class="zoom-card">
+				<img class="zoom-image" alt="" />
+				<figcaption class="zoom-caption"></figcaption>
+			</figure>
+			<button type="button" class="zoom-close" aria-label="Close">×</button>
+			<button type="button" class="zoom-arrow zoom-previous" aria-label="Previous artwork">‹</button>
+			<button type="button" class="zoom-arrow zoom-next" aria-label="Next artwork">›</button>
+		</dialog>
+		<script>
+			const themeToggle = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+			const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+			const currentTheme = () => document.documentElement.dataset.theme ?? (systemPrefersDark.matches ? 'dark' : 'light');
+			const syncThemeToggle = () => {
+				if (!themeToggle) {
+					return;
+				}
+				const isDark = currentTheme() === 'dark';
+				themeToggle.textContent = isDark ? 'Light mode' : 'Dark mode';
+				themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+			};
+
+			themeToggle?.addEventListener('click', () => {
+				const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+				document.documentElement.dataset.theme = nextTheme;
+				try {
+					localStorage.setItem('site-theme', nextTheme);
+				} catch (error) {}
+				syncThemeToggle();
+			});
+			syncThemeToggle();
+
+			const hoardToggle = document.getElementById('hoard-toggle') as HTMLButtonElement | null;
+			const syncHoardToggle = () => {
+				if (!hoardToggle) {
+					return;
+				}
+				const isHidden = document.documentElement.dataset.hoard === 'hidden';
+				hoardToggle.textContent = isHidden ? 'Show decoration' : 'Hide decoration';
+			};
+
+			hoardToggle?.addEventListener('click', () => {
+				const nextState = document.documentElement.dataset.hoard === 'hidden' ? 'shown' : 'hidden';
+				if (nextState === 'hidden') {
+					document.documentElement.dataset.hoard = 'hidden';
+				} else {
+					delete document.documentElement.dataset.hoard;
+				}
+				try {
+					localStorage.setItem('site-hoard', nextState);
+				} catch (error) {}
+				syncHoardToggle();
+			});
+			syncHoardToggle();
+
+			document.querySelectorAll<HTMLButtonElement>('[data-reveal]').forEach((button) => {
+				button.addEventListener('click', () => {
+					const figure = button.closest('figure');
+					figure?.classList.remove('is-blurred');
+					button.remove();
+				});
+			});
+
+			const zoomDialog = document.getElementById('zoom-dialog') as HTMLDialogElement;
+			const zoomImage = zoomDialog.querySelector<HTMLImageElement>('.zoom-image') as HTMLImageElement;
+			const zoomCaption = zoomDialog.querySelector<HTMLElement>('.zoom-caption') as HTMLElement;
+			const zoomPrevious = zoomDialog.querySelector<HTMLButtonElement>('.zoom-previous') as HTMLButtonElement;
+			const zoomNext = zoomDialog.querySelector<HTMLButtonElement>('.zoom-next') as HTMLButtonElement;
+			const zoomClose = zoomDialog.querySelector<HTMLButtonElement>('.zoom-close') as HTMLButtonElement;
+
+			let zoomItems: HTMLButtonElement[] = [];
+			let zoomIndex = 0;
+
+			const isBlurred = (button: HTMLButtonElement) => Boolean(button.closest('figure')?.classList.contains('is-blurred'));
+
+			const showZoomItem = (index: number) => {
+				zoomIndex = (index + zoomItems.length) % zoomItems.length;
+				const button = zoomItems[zoomIndex];
+				zoomImage.src = button.dataset.zoom ?? '';
+				zoomImage.alt = button.dataset.alt ?? '';
+				zoomCaption.textContent = button.dataset.caption ?? '';
+				const hasSeveral = zoomItems.length > 1;
+				zoomPrevious.hidden = !hasSeveral;
+				zoomNext.hidden = !hasSeveral;
+			};
+
+			const openZoom = (button: HTMLButtonElement) => {
+				const section = button.closest('section') ?? document;
+				zoomItems = [...section.querySelectorAll<HTMLButtonElement>('[data-zoom]')].filter((item) => !isBlurred(item));
+				showZoomItem(zoomItems.indexOf(button));
+				zoomDialog.showModal();
+			};
+
+			document.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((button) => {
+				button.addEventListener('click', () => {
+					if (!isBlurred(button)) {
+						openZoom(button);
+					}
+				});
+			});
+
+			zoomPrevious.addEventListener('click', () => showZoomItem(zoomIndex - 1));
+			zoomNext.addEventListener('click', () => showZoomItem(zoomIndex + 1));
+			zoomClose.addEventListener('click', () => zoomDialog.close());
+			zoomDialog.addEventListener('click', (event) => {
+				if (event.target === zoomDialog) {
+					zoomDialog.close();
+				}
+			});
+			document.addEventListener('keydown', (event) => {
+				if (!zoomDialog.open) {
+					return;
+				}
+				if (event.key === 'ArrowLeft') {
+					showZoomItem(zoomIndex - 1);
+				} else if (event.key === 'ArrowRight') {
+					showZoomItem(zoomIndex + 1);
+				}
+			});
+		</script>
+	</body>
+</html>

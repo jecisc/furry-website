@@ -1,0 +1,45 @@
+---
+interface Piece {
+	id: string;
+	file: string;
+	artist: string;
+	section: string;
+	gate: string;
+}
+
+interface Props {
+	pieces: Piece[];
+}
+
+const { pieces } = Astro.props;
+---
+
+<ul class="gallery">
+	{
+		pieces.map((piece, index) => {
+			const isGated = piece.gate !== 'none';
+			const artist = piece.artist.trim();
+			const alt = `Artwork of Jecisc by ${artist}`;
+			const number = String(index + 1).padStart(2, '0');
+			return (
+				<li>
+					<figure class:list={['piece', isGated && 'is-blurred']}>
+						<div class="piece-frame">
+							<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-caption={`#${number} · by ${artist}`}>
+								<img src={piece.file} alt={alt} loading="lazy" />
+							</button>
+							{isGated && (
+								<button type="button" class="reveal" data-reveal>
+									Show (18+)
+								</button>
+							)}
+						</div>
+						<figcaption>
+							<span class="number">#{number}</span> by {artist}
+						</figcaption>
+					</figure>
+				</li>
+			);
+		})
+	}
+</ul>

@@ -1,0 +1,22 @@
+{
+	"name": "Jecisc",
+	"intro": "Jecisc is a red dragon from the north of France.",
+	"description": [
+		"Jecisc is a red dragon from the north of France.",
+		"Placeholder: a longer description in the owner's own words goes here."
+	],
+	"traits": [
+		"Sarcastic",
+		"Stubborn",
+		"Kind",
+		"Distracted",
+		"Lazy"
+	],
+	"outfits": [
+		"Underwear",
+		"Casual hoodie",
+		"Jeans"
+	],
+	"socials": [],
+	"linksEmptyNote": "Links coming soon."
+}

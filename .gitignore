@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# original art (large files and other people's characters, kept out of git)
+src/assets/
