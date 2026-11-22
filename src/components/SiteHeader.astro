@@ -1,0 +1,35 @@
+---
+import content from '../data/content.json';
+import artPieces from '../data/art.json';
+
+interface Props {
+	/** Prefix for the section links, empty on the home page and "/" on other pages. */
+	linkPrefix?: string;
+}
+
+const { linkPrefix = '' } = Astro.props;
+const hotChocolateSticker = artPieces.find((piece) => piece.id === 'sticker-hot-chocolate');
+
+const navigationItems = [
+	{ label: 'Character', href: `${linkPrefix}#character` },
+	{ label: 'Art', href: `${linkPrefix}#art` },
+	{ label: 'Stickers', href: `${linkPrefix}#stickers` },
+	{ label: 'Links', href: `${linkPrefix}#links` },
+];
+---
+
+<header class="site-header">
+	<div class="wrap">
+		<a class="brand" href={`${linkPrefix}#top`}>
+			<img src="/favicon.png" alt="" width="32" height="32" />
+			<span class="gradient-text">{content.name}</span>
+		</a>
+		<nav class="site-nav" aria-label="Sections">
+			{navigationItems.map((item) => <a href={item.href}>{item.label}</a>)}
+		</nav>
+		<button type="button" class="theme-toggle" id="theme-toggle">
+			{hotChocolateSticker && <img src={hotChocolateSticker.file} alt="" width="26" height="26" />}
+			<span class="theme-toggle-label">Back to daylight</span>
+		</button>
+	</div>
+</header>

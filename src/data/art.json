@@ -4,223 +4,288 @@
 		"file": "/art/watercolour-portrait.webp",
 		"artist": "Jecisc",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1001,
+		"height": 1200
 	},
 	{
 		"id": "banana-sinotus",
 		"file": "/art/banana-sinotus.webp",
 		"artist": "Sinotus",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1001,
+		"height": 1200
 	},
 	{
 		"id": "rengo-head",
 		"file": "/art/rengo-head.webp",
 		"artist": "Rengo",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1152
 	},
 	{
 		"id": "bre-hoodie",
 		"file": "/art/bre-hoodie.webp",
 		"artist": "Bre Indigo",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 900,
+		"height": 1200
 	},
 	{
 		"id": "yacrical-hoodie",
 		"file": "/art/yacrical-hoodie.webp",
 		"artist": "Yacrical",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1157
 	},
 	{
 		"id": "shalinka-silhouette",
 		"file": "/art/shalinka-silhouette.webp",
 		"artist": "Shalinka",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 864,
+		"height": 1200
 	},
 	{
 		"id": "hoodiedog-fursona",
 		"file": "/art/hoodiedog-fursona.webp",
 		"artist": "Hoodiedog",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 905,
+		"height": 1200
 	},
 	{
 		"id": "emberfox-darkwood",
 		"file": "/art/emberfox-darkwood.webp",
 		"artist": "EmberFox",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 848
 	},
 	{
 		"id": "belvor-nude",
 		"file": "/art/belvor-nude.webp",
 		"artist": "Belvor",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1000,
+		"height": 1200
 	},
 	{
 		"id": "belvor-explicit",
 		"file": "/art/belvor-explicit.webp",
 		"artist": "Belvor",
 		"section": "art",
-		"gate": "explicit"
+		"gate": "explicit",
+		"width": 1000,
+		"height": 1200
 	},
 	{
 		"id": "mallow-tie",
 		"file": "/art/mallow-tie.webp",
 		"artist": "Mallow",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1139
 	},
 	{
 		"id": "hugo-jessie-jace",
 		"file": "/art/hugo-jessie-jace.webp",
 		"artist": "Hugo",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 900,
+		"height": 1200
 	},
 	{
 		"id": "lay-couch",
 		"file": "/art/lay-couch.webp",
 		"artist": "Lay",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "cocoline-sketch",
 		"file": "/art/cocoline-sketch.webp",
 		"artist": "CocoLine",
 		"section": "art",
-		"gate": "explicit"
+		"gate": "explicit",
+		"width": 1200,
+		"height": 1000,
+		"featured": true
 	},
 	{
 		"id": "falvie-jecisc",
 		"file": "/art/falvie-jecisc.webp",
 		"artist": "Falvie",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 927,
+		"height": 1200
 	},
 	{
 		"id": "yul-commission",
 		"file": "/art/yul-commission.webp",
 		"artist": "Yul",
 		"section": "art",
-		"gate": "none"
+		"gate": "none",
+		"width": 900,
+		"height": 1200
 	},
 	{
 		"id": "sticker-wow-face",
 		"file": "/art/sticker-wow-face.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-good-girl",
 		"file": "/art/sticker-good-girl.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-good-kitty",
 		"file": "/art/sticker-good-kitty.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-good-boy",
 		"file": "/art/sticker-good-boy.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-beg",
 		"file": "/art/sticker-beg.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-brick",
 		"file": "/art/sticker-brick.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-angry-ycx",
 		"file": "/art/sticker-angry-ycx.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-sleep-plush",
 		"file": "/art/sticker-sleep-plush.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-crossed-arms",
 		"file": "/art/sticker-crossed-arms.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-ycx-hug",
 		"file": "/art/sticker-ycx-hug.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-french-flag",
 		"file": "/art/sticker-french-flag.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-hot-chocolate",
 		"file": "/art/sticker-hot-chocolate.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "sticker-tongue",
 		"file": "/art/sticker-tongue.webp",
 		"artist": "Jecisc",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "cai-heh",
 		"file": "/art/cai-heh.webp",
 		"artist": "Dxmpl1ng",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "cai-huff",
 		"file": "/art/cai-huff.webp",
 		"artist": "Dxmpl1ng",
 		"section": "stickers",
-		"gate": "none"
+		"gate": "none",
+		"width": 1200,
+		"height": 1200
 	},
 	{
 		"id": "cai-explicit",
 		"file": "/art/cai-explicit.webp",
 		"artist": "Dxmpl1ng",
 		"section": "stickers",
-		"gate": "explicit"
+		"gate": "explicit",
+		"width": 1200,
+		"height": 1200
 	}
 ]

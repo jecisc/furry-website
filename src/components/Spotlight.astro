@@ -1,0 +1,40 @@
+---
+interface Props {
+	piece: {
+		file: string;
+		artist: string;
+		gate: string;
+		width: number;
+		height: number;
+	};
+}
+
+const { piece } = Astro.props;
+const isGated = piece.gate !== 'none';
+const artist = piece.artist.trim();
+const alt = `Artwork of Jecisc by ${artist}`;
+---
+
+<div class="spotlight">
+	<figure class:list={['spotlight-figure', isGated && 'is-blurred']} style={`--ratio: ${(piece.width / piece.height).toFixed(4)}`}>
+		<div class="spotlight-frame">
+			<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-caption={`by ${artist}`}>
+				<img src={piece.file} alt={alt} width={piece.width} height={piece.height} loading="lazy" />
+			</button>
+			{
+				isGated && (
+					<button type="button" class="reveal" data-reveal>
+						Peek (18+)
+					</button>
+				)
+			}
+		</div>
+	</figure>
+	<div class="spotlight-text">
+		<p class="eyebrow">Spotlight</p>
+		<h3>The one that set the mood</h3>
+		<p>
+			By {artist}. Its neon glow and late-night colours inspired the whole look of this site.
+		</p>
+	</div>
+</div>

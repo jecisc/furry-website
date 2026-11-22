@@ -2,54 +2,60 @@
 import Layout from '../layouts/Layout.astro';
 import Gallery from '../components/Gallery.astro';
 import Hoard from '../components/Hoard.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Spotlight from '../components/Spotlight.astro';
 import content from '../data/content.json';
 import artPieces from '../data/art.json';
 
 const heroPiece = artPieces.find((piece) => piece.id === 'watercolour-portrait');
+const sleepingSticker = artPieces.find((piece) => piece.id === 'sticker-sleep-plush');
+const peekingSticker = artPieces.find((piece) => piece.id === 'sticker-brick');
 const artSection = artPieces.filter((piece) => piece.section === 'art');
+const spotlightPiece = artSection.find((piece) => 'featured' in piece && piece.featured);
+const artGrid = artSection.filter((piece) => piece !== spotlightPiece);
 const stickerSection = artPieces.filter((piece) => piece.section === 'stickers');
 const year = new Date().getFullYear();
-
-const navigationItems = [
-	{ label: 'Character', href: '#character' },
-	{ label: 'Art', href: '#art' },
-	{ label: 'Stickers', href: '#stickers' },
-	{ label: 'Links', href: '#links' },
-];
 ---
 
 <Layout title={`${content.name} · red dragon from the north of France`} description={content.intro} image={heroPiece?.file}>
-	<header class="site-header">
-		<div class="wrap">
-			<a class="brand" href="#top">{content.name}</a>
-			<nav class="site-nav" aria-label="Sections">
-				{navigationItems.map((item) => <a href={item.href}>{item.label}</a>)}
-			</nav>
-			<button type="button" class="theme-toggle" id="theme-toggle">Dark mode</button>
-		</div>
-	</header>
+	<SiteHeader />
 
 	<main id="main">
 		<section class="hero" id="top">
 			<div class="wrap">
 				<div>
-					<h1>{content.name}</h1>
-					<p>{content.intro}</p>
+					<p class="eyebrow">Red dragon · North of France</p>
+					<h1 class="gradient-text">{content.name}</h1>
+					<p class="hero-tagline">{content.tagline}</p>
+					<div class="hero-actions">
+						<a class="button button--primary" href="#art">See the art</a>
+						<a class="button" href="#stickers">Grab a sticker</a>
+					</div>
 				</div>
 				{
 					heroPiece && (
-						<figure class="hero-image">
-							<img src={heroPiece.file} alt="Watercolour portrait of Jecisc, a red dragon" width="1200" height="1500" />
+						<figure class="hero-portrait" id="hero-portrait">
+							<div class="hero-frame">
+								<img class="hero-awake" src={heroPiece.file} alt="Watercolour portrait of Jecisc, a red dragon" width="1001" height="1200" />
+								{sleepingSticker && <img class="hero-asleep" src={sleepingSticker.file} alt="" aria-hidden="true" />}
+							</div>
+							<figcaption>
+								<span class="caption-awake">Watercolour by Jecisc</span>
+								<span class="caption-asleep">Shh. He is napping. Move to wake him up.</span>
+							</figcaption>
 						</figure>
 					)
 				}
 			</div>
 		</section>
 
+		<div class="brick-divider" aria-hidden="true"></div>
+
 		<section class="section" id="character">
 			<div class="wrap character-grid">
 				<div>
-					<h2>Character</h2>
+					<p class="eyebrow">The dragon</p>
+					<h2 class="gradient-text">Character</h2>
 					{content.description.map((paragraph) => <p>{paragraph}</p>)}
 				</div>
 				<dl class="facts">
@@ -65,7 +71,7 @@ const navigationItems = [
 					</dd>
 					<dt>Outfits</dt>
 					<dd>
-						<ul class="tag-list">
+						<ul class="tag-list tag-list--warm">
 							{content.outfits.map((outfit) => <li>{outfit}</li>)}
 						</ul>
 					</dd>
@@ -73,31 +79,43 @@ const navigationItems = [
 			</div>
 		</section>
 
+		<div class="brick-divider" aria-hidden="true"></div>
+
 		<section class="section" id="art">
 			<div class="wrap">
-				<h2>Art</h2>
-				<p class="section-intro">Pieces of Jecisc, each credited to its artist. Gated pieces are blurred until you confirm. Click any piece to zoom.</p>
-				<Gallery pieces={artSection} />
+				<p class="eyebrow">The art hoard</p>
+				<h2 class="gradient-text">Art</h2>
+				<p class="section-intro">{content.artIntro}</p>
+				{spotlightPiece && <Spotlight piece={spotlightPiece} />}
+				<Gallery pieces={artGrid} />
 			</div>
 		</section>
+
+		<div class="brick-divider" aria-hidden="true"></div>
 
 		<section class="section" id="stickers">
 			<div class="wrap">
-				<h2>Stickers</h2>
-				<p class="section-intro">Stickers of Jecisc. Click any sticker to zoom.</p>
-				<Gallery pieces={stickerSection} />
+				<p class="eyebrow">The sticker pack</p>
+				<h2 class="gradient-text">Stickers</h2>
+				<p class="section-intro">{content.stickersIntro}</p>
+				<Gallery pieces={stickerSection} layout="grid" />
 			</div>
 		</section>
 
+		<div class="brick-divider" aria-hidden="true"></div>
+
 		<section class="section" id="links">
 			<div class="wrap">
-				<h2>Links</h2>
+				<p class="eyebrow">Find him</p>
+				<h2 class="gradient-text">Links</h2>
 				{
 					content.socials.length > 0 ? (
-						<ul class="artist-list">
+						<ul class="link-list">
 							{content.socials.map((social) => (
 								<li>
-									<a href={social.url} rel="me noreferrer">{social.label}</a>
+									<a href={social.url} rel="me noreferrer">
+										{social.label}
+									</a>
 								</li>
 							))}
 						</ul>
@@ -109,9 +127,19 @@ const navigationItems = [
 		</section>
 	</main>
 
+	{
+		peekingSticker && (
+			<div class="peeker" id="peeker" aria-hidden="true">
+				<img src={peekingSticker.file} alt="" />
+			</div>
+		)
+	}
 	<Hoard />
 
 	<footer class="site-footer">
-		<div class="wrap">© {year} · {content.name}</div>
+		<div class="wrap">
+			<span>© {year} · {content.name}</span>
+			<span id="hoard-count" aria-live="polite">{content.footerNote}</span>
+		</div>
 	</footer>
 </Layout>

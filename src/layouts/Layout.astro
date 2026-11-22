@@ -11,11 +11,12 @@ const { title, description, image } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
+		<meta name="theme-color" content="#12090f" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		{image && <meta property="og:image" content={image} />}
@@ -25,9 +26,8 @@ const { title, description, image } = Astro.props;
 		<title>{title}</title>
 		<script is:inline>
 			try {
-				const savedTheme = localStorage.getItem('site-theme');
-				if (savedTheme === 'light' || savedTheme === 'dark') {
-					document.documentElement.dataset.theme = savedTheme;
+				if (localStorage.getItem('site-theme') === 'light') {
+					document.documentElement.dataset.theme = 'light';
 				}
 				if (localStorage.getItem('site-hoard') === 'hidden') {
 					document.documentElement.dataset.hoard = 'hidden';
@@ -48,21 +48,25 @@ const { title, description, image } = Astro.props;
 			<button type="button" class="zoom-arrow zoom-next" aria-label="Next artwork">›</button>
 		</dialog>
 		<script>
+			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+			const root = document.documentElement;
+
+			/* Theme: dark ("hot chocolate time") by default, light ("daylight") on request */
 			const themeToggle = document.getElementById('theme-toggle') as HTMLButtonElement | null;
-			const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-			const currentTheme = () => document.documentElement.dataset.theme ?? (systemPrefersDark.matches ? 'dark' : 'light');
+			const themeToggleLabel = themeToggle?.querySelector('.theme-toggle-label');
+			const currentTheme = () => (root.dataset.theme === 'light' ? 'light' : 'dark');
 			const syncThemeToggle = () => {
-				if (!themeToggle) {
+				if (!themeToggle || !themeToggleLabel) {
 					return;
 				}
 				const isDark = currentTheme() === 'dark';
-				themeToggle.textContent = isDark ? 'Light mode' : 'Dark mode';
-				themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+				themeToggleLabel.textContent = isDark ? 'Back to daylight' : 'Hot chocolate time';
+				themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
 			};
 
 			themeToggle?.addEventListener('click', () => {
 				const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
-				document.documentElement.dataset.theme = nextTheme;
+				root.dataset.theme = nextTheme;
 				try {
 					localStorage.setItem('site-theme', nextTheme);
 				} catch (error) {}
@@ -70,21 +74,21 @@ const { title, description, image } = Astro.props;
 			});
 			syncThemeToggle();
 
+			/* Decorations (hoard and peeking dragon) can be hidden for accessibility */
 			const hoardToggle = document.getElementById('hoard-toggle') as HTMLButtonElement | null;
+			const decorationsHidden = () => root.dataset.hoard === 'hidden';
 			const syncHoardToggle = () => {
-				if (!hoardToggle) {
-					return;
+				if (hoardToggle) {
+					hoardToggle.textContent = decorationsHidden() ? 'Show decorations' : 'Hide decorations';
 				}
-				const isHidden = document.documentElement.dataset.hoard === 'hidden';
-				hoardToggle.textContent = isHidden ? 'Show decoration' : 'Hide decoration';
 			};
 
 			hoardToggle?.addEventListener('click', () => {
-				const nextState = document.documentElement.dataset.hoard === 'hidden' ? 'shown' : 'hidden';
+				const nextState = decorationsHidden() ? 'shown' : 'hidden';
 				if (nextState === 'hidden') {
-					document.documentElement.dataset.hoard = 'hidden';
+					root.dataset.hoard = 'hidden';
 				} else {
-					delete document.documentElement.dataset.hoard;
+					delete root.dataset.hoard;
 				}
 				try {
 					localStorage.setItem('site-hoard', nextState);
@@ -93,20 +97,95 @@ const { title, description, image } = Astro.props;
 			});
 			syncHoardToggle();
 
+			/* Clicking a coin or a chocolate drops a new piece on the hoard */
+			const hoardSvg = document.querySelector<SVGSVGElement>('.hoard-svg');
+			const hoardCount = document.getElementById('hoard-count');
+			const svgNamespace = 'http://www.w3.org/2000/svg';
+			const coinMarkup =
+				'<ellipse cx="0" cy="3" rx="20" ry="7" fill="#8a5a00"/><ellipse cx="0" cy="0" rx="20" ry="7" fill="url(#gold)" stroke="#b07a10" stroke-width="1"/><ellipse cx="0" cy="-1" rx="11" ry="3.8" fill="none" stroke="#fff3b0" stroke-opacity="0.7" stroke-width="1"/>';
+			const chocolateMarkup =
+				'<rect x="-22" y="-10" width="44" height="20" rx="3" fill="url(#choc)" stroke="#2a150a" stroke-width="1.2"/><path d="M-22 0 H22 M-8 -10 V10 M8 -10 V10" stroke="#2a150a" stroke-width="1.1" opacity="0.85"/>';
+			let droppedPieces = 0;
+
+			/* Height of the pile at x, the same profile used to generate Hoard.astro */
+			const pileTopAt = (x: number) => 6 + 78 * Math.exp(-(((x - 1200) / 560) ** 2));
+
+			hoardSvg?.addEventListener('click', (event) => {
+				const matrix = hoardSvg.getScreenCTM();
+				if (!matrix) {
+					return;
+				}
+				const clicked = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+				const x = Math.min(2380, Math.max(20, clicked.x + (Math.random() * 40 - 20)));
+				const restY = 97 - pileTopAt(x) * (0.75 + Math.random() * 0.25);
+				const piece = document.createElementNS(svgNamespace, 'g');
+				piece.innerHTML = Math.random() < 0.2 ? chocolateMarkup : coinMarkup;
+				piece.setAttribute('transform', `translate(${x} ${restY})`);
+				hoardSvg.appendChild(piece);
+				if (!prefersReducedMotion.matches) {
+					piece.animate(
+						[
+							{ transform: `translate(${x}px, ${restY - 240}px)` },
+							{ transform: `translate(${x}px, ${restY}px)`, offset: 0.8 },
+							{ transform: `translate(${x}px, ${restY - 10}px)`, offset: 0.9 },
+							{ transform: `translate(${x}px, ${restY}px)` },
+						],
+						{ duration: 800, easing: 'ease-in' },
+					);
+				}
+				droppedPieces += 1;
+				if (hoardCount) {
+					hoardCount.textContent = `${droppedPieces} ${droppedPieces === 1 ? 'piece' : 'pieces'} added to the hoard. Don't tell Jecisc.`;
+				}
+			});
+
+			/* Jecisc falls asleep in the hero after a while without activity */
+			const heroPortrait = document.getElementById('hero-portrait');
+			let idleTimer: number | undefined;
+			const wakeUp = () => {
+				heroPortrait?.classList.remove('is-asleep');
+				window.clearTimeout(idleTimer);
+				idleTimer = window.setTimeout(() => heroPortrait?.classList.add('is-asleep'), 30000);
+			};
+			if (heroPortrait) {
+				['pointermove', 'pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((eventName) => window.addEventListener(eventName, wakeUp, { passive: true }));
+				wakeUp();
+			}
+
+			/* Now and then, Jecisc peeks from behind his hoard. He ducks when you get close. */
+			const peeker = document.getElementById('peeker');
+			const duck = () => peeker?.classList.remove('is-peeking');
+			const schedulePeek = (delay: number) => window.setTimeout(peek, delay);
+			function peek() {
+				if (!peeker) {
+					return;
+				}
+				if (!document.hidden && !decorationsHidden() && !prefersReducedMotion.matches) {
+					peeker.classList.add('is-peeking');
+					window.setTimeout(duck, 4500);
+				}
+				schedulePeek(25000 + Math.random() * 20000);
+			}
+			if (peeker) {
+				peeker.addEventListener('pointerenter', duck);
+				schedulePeek(10000 + Math.random() * 8000);
+			}
+
+			/* Gated artworks */
 			document.querySelectorAll<HTMLButtonElement>('[data-reveal]').forEach((button) => {
 				button.addEventListener('click', () => {
-					const figure = button.closest('figure');
-					figure?.classList.remove('is-blurred');
+					button.closest('figure')?.classList.remove('is-blurred');
 					button.remove();
 				});
 			});
 
+			/* Zoom dialog */
 			const zoomDialog = document.getElementById('zoom-dialog') as HTMLDialogElement;
-			const zoomImage = zoomDialog.querySelector<HTMLImageElement>('.zoom-image') as HTMLImageElement;
-			const zoomCaption = zoomDialog.querySelector<HTMLElement>('.zoom-caption') as HTMLElement;
-			const zoomPrevious = zoomDialog.querySelector<HTMLButtonElement>('.zoom-previous') as HTMLButtonElement;
-			const zoomNext = zoomDialog.querySelector<HTMLButtonElement>('.zoom-next') as HTMLButtonElement;
-			const zoomClose = zoomDialog.querySelector<HTMLButtonElement>('.zoom-close') as HTMLButtonElement;
+			const zoomImage = zoomDialog.querySelector('.zoom-image') as HTMLImageElement;
+			const zoomCaption = zoomDialog.querySelector('.zoom-caption') as HTMLElement;
+			const zoomPrevious = zoomDialog.querySelector('.zoom-previous') as HTMLButtonElement;
+			const zoomNext = zoomDialog.querySelector('.zoom-next') as HTMLButtonElement;
+			const zoomClose = zoomDialog.querySelector('.zoom-close') as HTMLButtonElement;
 
 			let zoomItems: HTMLButtonElement[] = [];
 			let zoomIndex = 0;

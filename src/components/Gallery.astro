@@ -5,38 +5,42 @@ interface Piece {
 	artist: string;
 	section: string;
 	gate: string;
+	width: number;
+	height: number;
 }
 
 interface Props {
 	pieces: Piece[];
+	/**
+	 * "justified" keeps each artwork's own shape in rows that fill the width.
+	 * "grid" gives every piece the same size, which suits the square stickers.
+	 */
+	layout?: 'justified' | 'grid';
 }
 
-const { pieces } = Astro.props;
+const { pieces, layout = 'justified' } = Astro.props;
 ---
 
-<ul class="gallery">
+<ul class:list={['gallery', `gallery--${layout}`]}>
 	{
-		pieces.map((piece, index) => {
+		pieces.map((piece) => {
 			const isGated = piece.gate !== 'none';
 			const artist = piece.artist.trim();
 			const alt = `Artwork of Jecisc by ${artist}`;
-			const number = String(index + 1).padStart(2, '0');
 			return (
-				<li>
+				<li style={`--ratio: ${(piece.width / piece.height).toFixed(4)}`}>
 					<figure class:list={['piece', isGated && 'is-blurred']}>
 						<div class="piece-frame">
-							<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-caption={`#${number} · by ${artist}`}>
-								<img src={piece.file} alt={alt} loading="lazy" />
+							<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-caption={`by ${artist}`}>
+								<img src={piece.file} alt={alt} width={piece.width} height={piece.height} loading="lazy" />
 							</button>
 							{isGated && (
 								<button type="button" class="reveal" data-reveal>
-									Show (18+)
+									Peek (18+)
 								</button>
 							)}
 						</div>
-						<figcaption>
-							<span class="number">#{number}</span> by {artist}
-						</figcaption>
+						<figcaption>by {artist}</figcaption>
 					</figure>
 				</li>
 			);
