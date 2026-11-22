@@ -42,6 +42,7 @@ const year = new Date().getFullYear();
 							<figcaption>
 								<span class="caption-awake">Watercolour by Jecisc</span>
 								<span class="caption-asleep">Shh. He is napping. Move to wake him up.</span>
+								<span class="caption-caught">Caught by you! He stays here until you refresh the page.</span>
 							</figcaption>
 						</figure>
 					)
@@ -130,10 +131,11 @@ const year = new Date().getFullYear();
 	{
 		peekingSticker && (
 			<div class="peeker" id="peeker" aria-hidden="true">
-				<img src={peekingSticker.file} alt="" />
+				<img src={peekingSticker.file} alt="" draggable="false" />
 			</div>
 		)
 	}
+	<p class="caught-message" id="caught-message" role="status"></p>
 	<Hoard />
 
 	<footer class="site-footer">

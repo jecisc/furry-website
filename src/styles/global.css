@@ -390,12 +390,32 @@ button:focus-visible {
 }
 
 .hero-portrait .caption-asleep,
-.hero-portrait.is-asleep .caption-awake {
+.hero-portrait .caption-caught,
+.hero-portrait.is-asleep .caption-awake,
+.hero-portrait.is-caught .caption-awake {
 	display: none;
 }
 
-.hero-portrait.is-asleep .caption-asleep {
+.hero-portrait.is-asleep .caption-asleep,
+.hero-portrait.is-caught:not(.is-asleep) .caption-caught {
 	display: inline;
+}
+
+/* The caught sticker takes the place of the portrait, keeping the frame's size */
+.hero-portrait.is-caught .hero-awake {
+	aspect-ratio: 1001 / 1200;
+	object-fit: contain;
+	background: var(--bg-raised);
+}
+
+.hero-portrait.is-caught .hero-frame {
+	animation: caught-pop 0.6s cubic-bezier(0.2, 0.8, 0.2, 1.4);
+}
+
+@keyframes caught-pop {
+	from {
+		transform: rotate(-1.5deg) scale(0.9);
+	}
 }
 
 /* Brick dividers, for the red-brick houses of the north of France */
@@ -916,11 +936,15 @@ button:focus-visible {
 	user-select: none;
 }
 
+:root {
+	--hoard-height: clamp(64px, 7vw, 110px);
+}
+
 /* Fixed height across the full width: wide screens see the whole pile, narrow ones its middle */
 .hoard-svg {
 	display: block;
 	width: 100%;
-	height: clamp(64px, 7vw, 110px);
+	height: var(--hoard-height);
 	overflow: visible;
 }
 
@@ -951,27 +975,86 @@ button:focus-visible {
 	color: var(--ink);
 }
 
-/* Jecisc peeking from behind his wall and his hoard */
+/* Jecisc peeking from behind his hoard, left of the centre where the pile is high, with his feet hidden in the coins */
 .peeker {
 	position: fixed;
-	left: clamp(0.5rem, 10vw, 9rem);
-	bottom: 0;
+	left: calc(50% - min(28vw, 26rem));
+	bottom: calc(var(--hoard-height) * 0.5);
 	z-index: 4;
 	width: clamp(6rem, 12vw, 9rem);
-	transform: translateY(110%);
+	transform: translateY(calc(100% + var(--hoard-height) * 0.5 + 2rem));
 	transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 	pointer-events: none;
+	touch-action: none;
 }
 
 .peeker.is-peeking {
-	transform: translateY(22%);
+	transform: translateY(15%);
 	pointer-events: auto;
+}
+
+/* Running away from the cursor: placed anywhere in the window through --x and --y */
+.peeker.is-running {
+	left: 0;
+	top: 0;
+	bottom: auto;
+	z-index: 20;
+	transform: translate(var(--x), var(--y));
+	transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+	pointer-events: auto;
+	cursor: grab;
+}
+
+.peeker.is-caught {
+	scale: 1.5;
+	opacity: 0;
+	transition:
+		scale 0.4s ease,
+		opacity 0.4s ease;
+	pointer-events: none;
 }
 
 .peeker img {
 	width: 100%;
 	height: auto;
 	filter: drop-shadow(0 0 14px var(--glow));
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+/* Shown for a few seconds when the peeking dragon is caught */
+.caught-message {
+	position: fixed;
+	top: 4.75rem;
+	left: 50%;
+	z-index: 30;
+	width: max-content;
+	max-width: calc(100% - 2rem);
+	margin: 0;
+	padding: 0.75rem 1.2rem;
+	border: 1px solid var(--pink);
+	border-radius: 1rem;
+	background: var(--surface-2);
+	color: var(--ink);
+	box-shadow: 0 0 34px -6px var(--pink);
+	text-align: center;
+	transform: translate(-50%, -1rem);
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+		opacity 0.4s ease,
+		visibility 0.4s;
+}
+
+.caught-message.is-visible {
+	transform: translate(-50%, 0);
+	opacity: 1;
+	visibility: visible;
+}
+
+.caught-message a {
+	color: var(--eye);
 }
 
 :root[data-hoard='hidden'] .hoard {

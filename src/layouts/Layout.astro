@@ -87,6 +87,7 @@ const { title, description, image } = Astro.props;
 				const nextState = decorationsHidden() ? 'shown' : 'hidden';
 				if (nextState === 'hidden') {
 					root.dataset.hoard = 'hidden';
+					hidePeeker();
 				} else {
 					delete root.dataset.hoard;
 				}
@@ -110,29 +111,43 @@ const { title, description, image } = Astro.props;
 			/* Height of the pile at x, the same profile used to generate Hoard.astro */
 			const pileTopAt = (x: number) => 6 + 78 * Math.exp(-(((x - 1200) / 560) ** 2));
 
-			hoardSvg?.addEventListener('click', (event) => {
-				const matrix = hoardSvg.getScreenCTM();
-				if (!matrix) {
+			/* Converts a point of the window into the coordinates of the hoard drawing */
+			const toHoardPoint = (clientX: number, clientY: number) => {
+				const matrix = hoardSvg?.getScreenCTM();
+				return matrix ? new DOMPoint(clientX, clientY).matrixTransform(matrix.inverse()) : null;
+			};
+
+			/* Adds a piece that lands on the pile near x, falling from fromY (in hoard coordinates), or from just above the pile when not given */
+			const dropPiece = (x: number, isChocolate: boolean, fromY?: number) => {
+				if (!hoardSvg) {
 					return;
 				}
-				const clicked = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
-				const x = Math.min(2380, Math.max(20, clicked.x + (Math.random() * 40 - 20)));
-				const restY = 97 - pileTopAt(x) * (0.75 + Math.random() * 0.25);
+				const restX = Math.min(2380, Math.max(20, x + (Math.random() * 40 - 20)));
+				const restY = 97 - pileTopAt(restX) * (0.75 + Math.random() * 0.25);
+				const startY = Math.min(fromY ?? restY - 240, restY - 10);
 				const piece = document.createElementNS(svgNamespace, 'g');
-				piece.innerHTML = Math.random() < 0.2 ? chocolateMarkup : coinMarkup;
-				piece.setAttribute('transform', `translate(${x} ${restY})`);
+				piece.innerHTML = isChocolate ? chocolateMarkup : coinMarkup;
+				piece.setAttribute('transform', `translate(${restX} ${restY})`);
 				hoardSvg.appendChild(piece);
 				if (!prefersReducedMotion.matches) {
 					piece.animate(
 						[
-							{ transform: `translate(${x}px, ${restY - 240}px)` },
-							{ transform: `translate(${x}px, ${restY}px)`, offset: 0.8 },
-							{ transform: `translate(${x}px, ${restY - 10}px)`, offset: 0.9 },
-							{ transform: `translate(${x}px, ${restY}px)` },
+							{ transform: `translate(${restX}px, ${startY}px)` },
+							{ transform: `translate(${restX}px, ${restY}px)`, offset: 0.8 },
+							{ transform: `translate(${restX}px, ${restY - 10}px)`, offset: 0.9 },
+							{ transform: `translate(${restX}px, ${restY}px)` },
 						],
-						{ duration: 800, easing: 'ease-in' },
+						{ duration: 800 * Math.sqrt(Math.max(1, (restY - startY) / 240)), easing: 'ease-in' },
 					);
 				}
+			};
+
+			hoardSvg?.addEventListener('click', (event) => {
+				const clicked = toHoardPoint(event.clientX, event.clientY);
+				if (!clicked) {
+					return;
+				}
+				dropPiece(clicked.x, Math.random() < 0.2);
 				droppedPieces += 1;
 				if (hoardCount) {
 					hoardCount.textContent = `${droppedPieces} ${droppedPieces === 1 ? 'piece' : 'pieces'} added to the hoard. Don't tell Jecisc.`;
@@ -152,23 +167,193 @@ const { title, description, image } = Astro.props;
 				wakeUp();
 			}
 
-			/* Now and then, Jecisc peeks from behind his hoard. He ducks when you get close. */
+			/*
+			 * Now and then, Jecisc peeks from behind his hoard.
+			 * Come close and he runs away from the cursor, anywhere in the window, then leaves after 15 seconds.
+			 * Each jump makes him a bit more tired (a longer pause before he can jump again), so a quick player can catch him.
+			 * Once caught, he replaces the portrait at the top of the page until the page is reloaded.
+			 */
 			const peeker = document.getElementById('peeker');
-			const duck = () => peeker?.classList.remove('is-peeking');
-			const schedulePeek = (delay: number) => window.setTimeout(peek, delay);
-			function peek() {
+			const caughtMessage = document.getElementById('caught-message');
+			const runDuration = 15000;
+			const fleeRadius = 60;
+			let peekerState: 'hidden' | 'peeking' | 'running' | 'leaving' | 'caught' = 'hidden';
+			let duckTimer: number | undefined;
+			let escapeTimer: number | undefined;
+			let coinTrailTimer: number | undefined;
+			let fleeCount = 0;
+			let fleeCooldownEnd = 0;
+
+			const withoutTransition = (change: () => void) => {
 				if (!peeker) {
 					return;
 				}
-				if (!document.hidden && !decorationsHidden() && !prefersReducedMotion.matches) {
-					peeker.classList.add('is-peeking');
-					window.setTimeout(duck, 4500);
+				peeker.style.transition = 'none';
+				change();
+				peeker.getBoundingClientRect();
+				peeker.style.transition = '';
+			};
+
+			const movePeekerTo = (x: number, y: number) => {
+				peeker?.style.setProperty('--x', `${x}px`);
+				peeker?.style.setProperty('--y', `${y}px`);
+			};
+
+			/* While running, he loses coins from his pockets: they fall from where he is into the pile */
+			const dropCoinsFromPeeker = (count: number) => {
+				if (!peeker) {
+					return;
 				}
-				schedulePeek(25000 + Math.random() * 20000);
+				const rect = peeker.getBoundingClientRect();
+				const origin = toHoardPoint(rect.left + rect.width / 2, rect.top + rect.height * 0.7);
+				if (!origin) {
+					return;
+				}
+				for (let index = 0; index < count; index++) {
+					dropPiece(origin.x, false, origin.y);
+				}
+			};
+
+			const stopCoinTrail = () => window.clearInterval(coinTrailTimer);
+
+			function hidePeeker() {
+				if (!peeker || peekerState === 'caught') {
+					return;
+				}
+				window.clearTimeout(duckTimer);
+				window.clearTimeout(escapeTimer);
+				stopCoinTrail();
+				withoutTransition(() => peeker.classList.remove('is-peeking', 'is-running'));
+				peekerState = 'hidden';
 			}
+
+			function peek() {
+				if (!peeker || peekerState === 'caught') {
+					return;
+				}
+				if (peekerState === 'hidden' && !document.hidden && !decorationsHidden() && !prefersReducedMotion.matches) {
+					peekerState = 'peeking';
+					peeker.classList.add('is-peeking');
+					duckTimer = window.setTimeout(() => {
+						peeker.classList.remove('is-peeking');
+						peekerState = 'hidden';
+					}, 4500);
+				}
+				window.setTimeout(peek, 25000 + Math.random() * 20000);
+			}
+
+			const startRunning = () => {
+				if (!peeker) {
+					return;
+				}
+				window.clearTimeout(duckTimer);
+				const rect = peeker.getBoundingClientRect();
+				withoutTransition(() => {
+					peeker.classList.replace('is-peeking', 'is-running');
+					movePeekerTo(rect.left, rect.top);
+				});
+				peekerState = 'running';
+				fleeCount = 0;
+				escapeTimer = window.setTimeout(leave, runDuration);
+				coinTrailTimer = window.setInterval(() => dropCoinsFromPeeker(1), 600);
+			};
+
+			/* Jumps to a random place far enough from the pointer, below the header and above the bottom edge */
+			const flee = (pointerX: number, pointerY: number) => {
+				if (!peeker) {
+					return;
+				}
+				const { width, height } = peeker.getBoundingClientRect();
+				const margin = 16;
+				const top = 72;
+				const minimumDistance = Math.min(window.innerWidth, window.innerHeight) * 0.4;
+				let destination = { x: 0, y: 0 };
+				let destinationDistance = -1;
+				for (let attempt = 0; attempt < 12 && destinationDistance < minimumDistance; attempt++) {
+					const x = margin + Math.random() * Math.max(0, window.innerWidth - width - 2 * margin);
+					const y = top + Math.random() * Math.max(0, window.innerHeight - height - top - margin);
+					const distance = Math.hypot(x + width / 2 - pointerX, y + height / 2 - pointerY);
+					if (distance > destinationDistance) {
+						destination = { x, y };
+						destinationDistance = distance;
+					}
+				}
+				dropCoinsFromPeeker(2);
+				movePeekerTo(destination.x, destination.y);
+				fleeCount += 1;
+				fleeCooldownEnd = performance.now() + Math.min(1200, 250 + fleeCount * 60);
+			};
+
+			const canFlee = () => (peekerState === 'peeking' || peekerState === 'running') && performance.now() >= fleeCooldownEnd;
+
+			const runAwayFrom = (pointerX: number, pointerY: number) => {
+				if (peekerState === 'peeking') {
+					startRunning();
+				}
+				flee(pointerX, pointerY);
+			};
+
+			function leave() {
+				if (!peeker || peekerState !== 'running') {
+					return;
+				}
+				peekerState = 'leaving';
+				stopCoinTrail();
+				const rect = peeker.getBoundingClientRect();
+				const exitsLeft = rect.left + rect.width / 2 < window.innerWidth / 2;
+				movePeekerTo(exitsLeft ? -rect.width * 1.5 : window.innerWidth + rect.width * 0.5, rect.top);
+				escapeTimer = window.setTimeout(hidePeeker, 700);
+			}
+
+			const catchPeeker = () => {
+				if (!peeker) {
+					return;
+				}
+				peekerState = 'caught';
+				window.clearTimeout(duckTimer);
+				window.clearTimeout(escapeTimer);
+				stopCoinTrail();
+				dropCoinsFromPeeker(5);
+				peeker.classList.add('is-caught');
+				window.setTimeout(() => peeker.remove(), 400);
+				const portraitImage = heroPortrait?.querySelector<HTMLImageElement>('.hero-awake');
+				const stickerImage = peeker.querySelector('img');
+				if (heroPortrait && portraitImage && stickerImage) {
+					portraitImage.src = stickerImage.src;
+					portraitImage.alt = 'Jecisc peeking over a brick wall, caught by you';
+					heroPortrait.classList.add('is-caught');
+				}
+				if (caughtMessage) {
+					caughtMessage.innerHTML = 'You caught Jecisc! <a href="#top">He now guards the top of the page</a> until you refresh.';
+					caughtMessage.classList.add('is-visible');
+					window.setTimeout(() => caughtMessage.classList.remove('is-visible'), 7000);
+				}
+			};
+
 			if (peeker) {
-				peeker.addEventListener('pointerenter', duck);
-				schedulePeek(10000 + Math.random() * 8000);
+				document.addEventListener('pointermove', (event) => {
+					if (event.pointerType === 'touch' || !canFlee()) {
+						return;
+					}
+					const rect = peeker.getBoundingClientRect();
+					const distance = Math.hypot(event.clientX - (rect.left + rect.width / 2), event.clientY - (rect.top + rect.height / 2));
+					if (distance <= rect.width / 2 + fleeRadius) {
+						runAwayFrom(event.clientX, event.clientY);
+					}
+				});
+				/* Without hover on touch screens, a tap is the attempt: he dodges it unless he is still catching his breath */
+				peeker.addEventListener('pointerdown', (event) => {
+					event.preventDefault();
+					if (peekerState === 'hidden' || peekerState === 'caught') {
+						return;
+					}
+					if (event.pointerType === 'touch' && canFlee()) {
+						runAwayFrom(event.clientX, event.clientY);
+					} else {
+						catchPeeker();
+					}
+				});
+				window.setTimeout(peek, 10000 + Math.random() * 8000);
 			}
 
 			/* Gated artworks */
