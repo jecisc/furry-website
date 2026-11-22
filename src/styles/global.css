@@ -948,8 +948,9 @@ button:focus-visible {
 	overflow: visible;
 }
 
-/* Only the coins and chocolates themselves catch clicks, the gaps let clicks through */
-.hoard-svg g {
+/* Only the pile itself catches clicks, the space above it lets clicks through */
+.hoard-svg g,
+.hoard-svg .hoard-base {
 	pointer-events: visiblePainted;
 	cursor: pointer;
 }
@@ -977,15 +978,26 @@ button:focus-visible {
 
 /* Jecisc peeking from behind his hoard, left of the centre where the pile is high, with his feet hidden in the coins */
 .peeker {
+	--peeker-bottom: calc(var(--hoard-height) * 0.5);
 	position: fixed;
 	left: calc(50% - min(28vw, 26rem));
-	bottom: calc(var(--hoard-height) * 0.5);
+	bottom: var(--peeker-bottom);
 	z-index: 4;
 	width: clamp(6rem, 12vw, 9rem);
-	transform: translateY(calc(100% + var(--hoard-height) * 0.5 + 2rem));
+	transform: translateY(calc(100% + var(--peeker-bottom) + 2rem));
 	transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 	pointer-events: none;
 	touch-action: none;
+}
+
+/* On wide screens, he peeks in the empty margin left of the content, where the pile is lower */
+@media (min-width: 82rem) {
+	.peeker {
+		--peeker-width: min(9rem, (100% - 66rem) / 2 - 1.5rem);
+		--peeker-bottom: calc(var(--hoard-height) * 0.2);
+		left: calc((100% - 66rem) / 4 - var(--peeker-width) / 2);
+		width: var(--peeker-width);
+	}
 }
 
 .peeker.is-peeking {
