@@ -91,6 +91,18 @@ const year = new Date().getFullYear();
 					<p class="eyebrow">The dragon</p>
 					<h2 class="gradient-text">Character</h2>
 					{content.description.map((paragraph) => <p>{paragraph}</p>)}
+					<h3 class="palette-title">My colours</h3>
+					<ul class="palette">
+						{content.palette.map((swatch) => (
+							<li>
+								<button type="button" class="palette-chip" data-copy={swatch.colour} aria-label={`Copy the ${swatch.part.toLowerCase()} colour ${swatch.colour}`}>
+									<span class="palette-swatch" style={`--swatch: ${swatch.colour}`} aria-hidden="true" />
+									<span class="palette-part">{swatch.part}</span>
+									<code class="palette-code" data-copy-feedback>{swatch.colour}</code>
+								</button>
+							</li>
+						))}
+					</ul>
 				</div>
 				<dl class="facts">
 					<dt>Species</dt>
@@ -163,7 +175,7 @@ const year = new Date().getFullYear();
 								) : (
 									<button type="button" class="link-card" data-copy={social.handle} aria-label={`Copy ${social.network} username ${social.handle}`}>
 										{details}
-										<span class="link-action">{note}Copy username</span>
+										<span class="link-action" data-copy-feedback>{note}Copy username</span>
 									</button>
 								)}
 							</li>

@@ -356,25 +356,25 @@ const { title, description, image } = Astro.props;
 				window.setTimeout(peek, 10000 + Math.random() * 8000);
 			}
 
-			/* Networks without profile pages: the card copies the username */
+			/* Buttons that copy a text (a username, a colour code): their [data-copy-feedback] element briefly says whether it worked */
 			document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
-				const action = button.querySelector('.link-action');
-				const actionText = action?.textContent ?? '';
+				const feedback = button.querySelector('[data-copy-feedback]');
+				const feedbackText = feedback?.textContent ?? '';
 				let resetTimer: number | undefined;
 				button.addEventListener('click', async () => {
-					if (!action) {
+					if (!feedback) {
 						return;
 					}
 					try {
 						await navigator.clipboard.writeText(button.dataset.copy ?? '');
-						action.textContent = 'Copied!';
+						feedback.textContent = 'Copied!';
 						button.classList.add('is-copied');
 					} catch (error) {
-						action.textContent = 'Copy failed, the username is above';
+						feedback.textContent = 'Copy failed';
 					}
 					window.clearTimeout(resetTimer);
 					resetTimer = window.setTimeout(() => {
-						action.textContent = actionText;
+						feedback.textContent = feedbackText;
 						button.classList.remove('is-copied');
 					}, 2000);
 				});

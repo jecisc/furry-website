@@ -724,6 +724,79 @@ button:focus-visible {
 	color: var(--muted);
 }
 
+/* Colour palette of the fursona, in the character section */
+.palette-title {
+	margin: 2rem 0 1rem;
+	font-family: var(--serif);
+	font-size: 1.35rem;
+}
+
+.palette {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.7rem;
+	max-width: 24rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* Each chip is a button that copies its colour code */
+.palette-chip {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	column-gap: 0.65rem;
+	width: 100%;
+	padding: 0.4rem 1rem 0.4rem 0.6rem;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	background: var(--surface);
+	color: var(--ink);
+	font: inherit;
+	text-align: left;
+	cursor: copy;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.palette-chip:hover,
+.palette-chip:focus-visible {
+	border-color: var(--pink);
+	box-shadow: 0 0 20px -8px var(--pink);
+}
+
+.palette-chip.is-copied .palette-code {
+	color: var(--pink-soft);
+}
+
+/*
+ * Each colour is a splash of paint in the flat colour: an irregular blob with flicks on top, streaks dragged off to the right and the lower left,
+ * and a few drops around it. The splash shape is used as a mask over the colour.
+ */
+.palette-swatch {
+	--paint-splash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M18 40C16 30 24 22 34 22 36 16 40 12 44 14L46 3 49 15C53 12 58 14 60 18L67 7 64 20C70 20 74 26 72 32 78 34 80 40 76 44L97 46 78 49C80 52 80 55 78 57L99 61 79 62 94 67 77 67C76 72 72 76 66 78L89 84 64 81C58 86 50 86 44 82 38 86 30 84 26 78L5 82 24 74 9 70 20 66C14 60 14 50 18 40ZM66 90C76 88 87 87.5 97 87.5 87 89.5 76 90.5 66 91.5ZM3 64C8 63 12 62.4 17 62.5 12 63.6 8 64.2 3 64.8ZM30 92C36 91 42 90.8 48 91 42 92 36 92.5 30 93ZM84 28A2.2 2.2 0 1 0 84.1 28ZM10 48A1.6 1.6 0 1 0 10.1 48ZM90 76A1.5 1.5 0 1 0 90.1 76Z'/%3E%3C/svg%3E");
+	grid-row: span 2;
+	width: 2.6rem;
+	height: 2.4rem;
+	background: var(--swatch);
+	-webkit-mask: var(--paint-splash) center / 100% 100% no-repeat;
+	mask: var(--paint-splash) center / 100% 100% no-repeat;
+}
+
+.palette-part {
+	font-weight: 700;
+	font-size: 0.9rem;
+	line-height: 1.2;
+}
+
+.palette-code {
+	color: var(--muted);
+	font-size: 0.78rem;
+	line-height: 1.2;
+}
+
 /* Links: a card per network, a link when the network has profile pages, a copy button otherwise */
 .link-list {
 	display: grid;

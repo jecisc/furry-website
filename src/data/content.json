@@ -12,6 +12,12 @@
 		"Distracted",
 		"Lazy"
 	],
+	"palette": [
+		{ "part": "Scales", "colour": "#d65234" },
+		{ "part": "Belly", "colour": "#fb7c38" },
+		{ "part": "Eyes", "colour": "#fec846" },
+		{ "part": "Horns", "colour": "#f0c8a8" }
+	],
 	"outfits": [
 		"Underwear",
 		"Casual hoodie",
