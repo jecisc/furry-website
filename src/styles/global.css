@@ -448,6 +448,11 @@ button:focus-visible {
 	line-height: 1.1;
 }
 
+/* Call to action right under a section intro */
+.section-actions {
+	margin: -0.75rem 0 2rem;
+}
+
 .section-intro {
 	max-width: 42rem;
 	margin: 0 0 2rem;
