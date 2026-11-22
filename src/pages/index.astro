@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Gallery from '../components/Gallery.astro';
 import Hoard from '../components/Hoard.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import SocialIcon from '../components/SocialIcon.astro';
 import Spotlight from '../components/Spotlight.astro';
 import content from '../data/content.json';
 import artPieces from '../data/art.json';
@@ -109,21 +110,34 @@ const year = new Date().getFullYear();
 			<div class="wrap">
 				<p class="eyebrow">Find him</p>
 				<h2 class="gradient-text">Links</h2>
-				{
-					content.socials.length > 0 ? (
-						<ul class="link-list">
-							{content.socials.map((social) => (
-								<li>
-									<a href={social.url} rel="me noreferrer">
-										{social.label}
+				<p class="section-intro">{content.linksIntro}</p>
+				<ul class="link-list">
+					{content.socials.map((social) => {
+						const note = 'note' in social ? `${social.note} · ` : '';
+						const details = (
+							<Fragment>
+								<SocialIcon network={social.network} />
+								<span class="link-network">{social.network}</span>
+								<span class="link-handle">{social.handle}</span>
+							</Fragment>
+						);
+						return (
+							<li>
+								{'url' in social ? (
+									<a class="link-card" href={social.url} target="_blank" rel="me noopener noreferrer">
+										{details}
+										<span class="link-action">{note}Open profile</span>
 									</a>
-								</li>
-							))}
-						</ul>
-					) : (
-						<p class="links-empty">{content.linksEmptyNote}</p>
-					)
-				}
+								) : (
+									<button type="button" class="link-card" data-copy={social.handle} aria-label={`Copy ${social.network} username ${social.handle}`}>
+										{details}
+										<span class="link-action">{note}Copy username</span>
+									</button>
+								)}
+							</li>
+						);
+					})}
+				</ul>
 			</div>
 		</section>
 	</main>

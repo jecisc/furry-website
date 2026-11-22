@@ -356,6 +356,30 @@ const { title, description, image } = Astro.props;
 				window.setTimeout(peek, 10000 + Math.random() * 8000);
 			}
 
+			/* Networks without profile pages: the card copies the username */
+			document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+				const action = button.querySelector('.link-action');
+				const actionText = action?.textContent ?? '';
+				let resetTimer: number | undefined;
+				button.addEventListener('click', async () => {
+					if (!action) {
+						return;
+					}
+					try {
+						await navigator.clipboard.writeText(button.dataset.copy ?? '');
+						action.textContent = 'Copied!';
+						button.classList.add('is-copied');
+					} catch (error) {
+						action.textContent = 'Copy failed, the username is above';
+					}
+					window.clearTimeout(resetTimer);
+					resetTimer = window.setTimeout(() => {
+						action.textContent = actionText;
+						button.classList.remove('is-copied');
+					}, 2000);
+				});
+			});
+
 			/* Gated artworks */
 			document.querySelectorAll<HTMLButtonElement>('[data-reveal]').forEach((button) => {
 				button.addEventListener('click', () => {

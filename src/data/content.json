@@ -17,8 +17,15 @@
 		"Casual hoodie",
 		"Jeans"
 	],
-	"socials": [],
-	"linksEmptyNote": "Jecisc was too lazy to add his links yet. Try again after his nap.",
+	"socials": [
+		{ "network": "Barq!", "handle": "jecisc" },
+		{ "network": "Telegram", "handle": "Jecisc", "url": "https://t.me/Jecisc" },
+		{ "network": "Discord", "handle": "jecisc" },
+		{ "network": "Twitter", "handle": "jecisc1", "url": "https://x.com/jecisc1", "note": "Not very active" },
+		{ "network": "GitHub", "handle": "jecisc", "url": "https://github.com/jecisc" },
+		{ "network": "Snapchat", "handle": "jecisc1", "url": "https://www.snapchat.com/add/jecisc1" }
+	],
+	"linksIntro": "Say hi. He answers faster when there is chocolate involved.",
 	"tagline": "Red dragon from the north of France. Hoards gold, chocolate and naps. Sarcastic, stubborn, secretly kind.",
 	"artIntro": "Jecisc, as drawn by people far more patient than him. Each piece is credited to its artist. A few hide behind a curtain: peek only if you are 18 or older.",
 	"stickersIntro": "For when replying with actual words is too much effort.",
