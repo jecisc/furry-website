@@ -1,8 +1,8 @@
 {
 	"name": "Jecisc",
-	"intro": "Jecisc is a red dragon from the north of France.",
+	"intro": "I'm Jecisc, a red dragon from the north of France.",
 	"description": [
-		"Jecisc is a red dragon from the north of France.",
+		"I'm a red dragon from the north of France.",
 		"Placeholder: a longer description in the owner's own words goes here."
 	],
 	"traits": [
@@ -25,11 +25,11 @@
 		{ "network": "GitHub", "handle": "jecisc", "url": "https://github.com/jecisc" },
 		{ "network": "Snapchat", "handle": "jecisc1", "url": "https://www.snapchat.com/add/jecisc1" }
 	],
-	"linksIntro": "Say hi. He answers faster when there is chocolate involved.",
-	"tagline": "Red dragon from the north of France. Hoards gold, chocolate and naps. Sarcastic, stubborn, secretly kind.",
-	"artIntro": "Jecisc, as drawn by people far more patient than him. Each piece is credited to its artist. A few hide behind a curtain: peek only if you are 18 or older.",
+	"linksIntro": "Say hi. I answer faster when there is chocolate involved.",
+	"tagline": "Red dragon from the north of France. I hoard gold, chocolate and naps. Sarcastic, stubborn, secretly kind.",
+	"artIntro": "Me, as drawn by people far more patient than I am. Each piece is credited to its artist. A few hide behind a curtain: peek only if you are 18 or older.",
 	"stickersIntro": "For when replying with actual words is too much effort.",
 	"footerNote": "Hoard last counted: never.",
-	"notFoundTitle": "Jecisc sat on this page. It's his now.",
-	"notFoundText": "Whatever was here is part of the hoard. You can still visit the rest."
+	"notFoundTitle": "I sat on this page. It's mine now.",
+	"notFoundText": "Whatever was here is part of my hoard. You can still visit the rest."
 }

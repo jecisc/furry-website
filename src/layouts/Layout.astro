@@ -150,7 +150,7 @@ const { title, description, image } = Astro.props;
 				dropPiece(clicked.x, Math.random() < 0.2);
 				droppedPieces += 1;
 				if (hoardCount) {
-					hoardCount.textContent = `${droppedPieces} ${droppedPieces === 1 ? 'piece' : 'pieces'} added to the hoard. Don't tell Jecisc.`;
+					hoardCount.textContent = `${droppedPieces} ${droppedPieces === 1 ? 'piece' : 'pieces'} added to my hoard. Thank you, I'll take good care of them.`;
 				}
 			});
 
@@ -324,7 +324,7 @@ const { title, description, image } = Astro.props;
 					heroPortrait.classList.add('is-caught');
 				}
 				if (caughtMessage) {
-					caughtMessage.innerHTML = 'You caught Jecisc! <a href="#top">He now guards the top of the page</a> until you refresh.';
+					caughtMessage.innerHTML = 'You caught me! <a href="#top">I now guard the top of the page</a> until you refresh.';
 					caughtMessage.classList.add('is-visible');
 					window.setTimeout(() => caughtMessage.classList.remove('is-visible'), 7000);
 				}
