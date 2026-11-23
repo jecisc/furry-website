@@ -21,6 +21,10 @@
 	--glow: rgb(255 79 163 / 0.35);
 	--dot: rgb(255 79 163 / 0.3);
 	--shadow: rgb(0 0 0 / 0.6);
+	/* Lifts cards off the background. The dark theme does not need it: its cards are lighter than the background. */
+	--card-shadow: 0 0 #0000;
+	/* Opacity of the brick lines */
+	--brick-opacity: 0.8;
 	--heading-gradient: linear-gradient(100deg, var(--pink) 0%, var(--red) 55%, var(--belly) 100%);
 	--scale-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='45'%3E%3Cpath d='M13 0 L26 7.5 L26 22.5 L13 30 L0 22.5 L0 7.5 Z M13 30 V45' fill='none' stroke='%23ffffff' stroke-opacity='0.06'/%3E%3C/svg%3E");
 	--serif: Georgia, 'Times New Roman', serif;
@@ -28,25 +32,31 @@
 	color-scheme: dark;
 }
 
+/*
+ * Light theme: white cards on a warm sand background, with darker inks so every text reaches at least 4.5:1 against what is behind it.
+ * Pink and gold are deepened for the same reason: the bright versions of the dark theme are unreadable on white.
+ */
 :root[data-theme='light'] {
-	--bg: #f7efe8;
-	--bg-raised: #f1e5dc;
-	--surface: #fffaf6;
-	--surface-2: #f3e6df;
-	--line: #e2cfc8;
-	--ink: #2d1a22;
-	--muted: #74525f;
-	--red: #b3122b;
-	--pink: #d61f7a;
-	--pink-soft: #e86aa8;
-	--belly: #c26a0a;
-	--eye: #9a6a00;
-	--horn: #9c8a66;
-	--brick: #b5524f;
-	--glow: rgb(214 31 122 / 0.16);
-	--dot: rgb(214 31 122 / 0.16);
-	--shadow: rgb(45 26 34 / 0.25);
-	--scale-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='45'%3E%3Cpath d='M13 0 L26 7.5 L26 22.5 L13 30 L0 22.5 L0 7.5 Z M13 30 V45' fill='none' stroke='%23000000' stroke-opacity='0.06'/%3E%3C/svg%3E");
+	--bg: #f0e2d5;
+	--bg-raised: #e7d4c5;
+	--surface: #ffffff;
+	--surface-2: #f6ebe3;
+	--line: #c9a99d;
+	--ink: #1c0b13;
+	--muted: #553545;
+	--red: #a0102a;
+	--pink: #bf1460;
+	--pink-soft: #ad1458;
+	--belly: #a35000;
+	--eye: #7a4e00;
+	--horn: #7d6a48;
+	--brick: #9a3834;
+	--glow: rgb(191 20 96 / 0.2);
+	--dot: rgb(191 20 96 / 0.22);
+	--shadow: rgb(45 15 28 / 0.3);
+	--card-shadow: 0 1px 2px rgb(45 15 28 / 0.1), 0 10px 24px -14px rgb(45 15 28 / 0.35);
+	--brick-opacity: 1;
+	--scale-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='45'%3E%3Cpath d='M13 0 L26 7.5 L26 22.5 L13 30 L0 22.5 L0 7.5 Z M13 30 V45' fill='none' stroke='%23000000' stroke-opacity='0.07'/%3E%3C/svg%3E");
 	color-scheme: light;
 }
 
@@ -219,6 +229,7 @@ button:focus-visible {
 	border: 1px solid var(--line);
 	border-radius: 999px;
 	background: var(--surface);
+	box-shadow: var(--card-shadow);
 	color: var(--ink);
 	font: inherit;
 	font-size: 0.85rem;
@@ -258,6 +269,7 @@ button:focus-visible {
 	border-radius: 999px;
 	border: 1px solid var(--line);
 	color: var(--ink);
+	box-shadow: var(--card-shadow);
 	font-weight: 600;
 	text-decoration: none;
 	transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -482,7 +494,7 @@ button:focus-visible {
 	background-color: var(--brick);
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='22'%3E%3Cpath d='M0 0.75H44M0 11.5H44M22 0V11.5M11 11.5V22M33 11.5V22' fill='none' stroke='%23000' stroke-opacity='0.55' stroke-width='1.5'/%3E%3C/svg%3E");
 	background-size: 44px 22px;
-	opacity: 0.8;
+	opacity: var(--brick-opacity);
 	-webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 	mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }
@@ -558,7 +570,7 @@ button:focus-visible {
 	border-radius: 1rem;
 	background-color: var(--surface);
 	background-image: var(--scale-pattern);
-	box-shadow: 0 24px 60px -36px var(--pink);
+	box-shadow: var(--card-shadow), 0 24px 60px -36px var(--pink);
 }
 
 .facts dt {
@@ -665,6 +677,7 @@ button:focus-visible {
 	border: 1px solid var(--line);
 	border-radius: 0.85rem;
 	background: var(--surface);
+	box-shadow: var(--card-shadow);
 	transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -845,6 +858,7 @@ button:focus-visible {
 	border: 1px solid var(--line);
 	border-radius: 999px;
 	background: var(--surface);
+	box-shadow: var(--card-shadow);
 	color: var(--ink);
 	font: inherit;
 	text-align: left;
@@ -911,6 +925,7 @@ button:focus-visible {
 	border: 1px solid var(--line);
 	border-radius: 1rem;
 	background: var(--surface);
+	box-shadow: var(--card-shadow);
 	color: var(--ink);
 	font: inherit;
 	text-align: left;
@@ -940,6 +955,13 @@ button:focus-visible {
 	background: color-mix(in srgb, var(--brand) 14%, transparent);
 	color: var(--brand);
 	transition: transform 0.2s ease;
+}
+
+/* Tinted squares fade on a white card, so the light theme fills them with the brand colour */
+:root[data-theme='light'] .link-icon {
+	border-color: transparent;
+	background: var(--brand);
+	color: var(--brand-logo);
 }
 
 .link-icon svg {

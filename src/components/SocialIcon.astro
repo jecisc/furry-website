@@ -1,6 +1,7 @@
 ---
 /**
  * Logo of a social network, drawn in the network's colour on a tinted square.
+ * In the light theme the square is filled with the network's colour instead, and the logo is drawn in white, or in black on light colours.
  * The logos come from Simple Icons (https://simpleicons.org, CC0): version 16.38.1, and 10.4.0 for the old Twitter bird.
  * Barq! is not in Simple Icons, so it gets a paw instead.
  */
@@ -33,13 +34,18 @@ const colours: Record<string, string> = {
 	'Barq!': 'var(--pink)',
 };
 
+/* Logo colour on the filled square of the light theme, for the networks whose colour is too light for white */
+const logoColours: Record<string, string> = {
+	Snapchat: '#000000',
+};
+
 const { network } = Astro.props;
 const path = paths[network];
 ---
 
 {
 	path && (
-		<span class="link-icon" style={`--brand: ${colours[network] ?? 'var(--pink)'}`} aria-hidden="true">
+		<span class="link-icon" style={`--brand: ${colours[network] ?? 'var(--pink)'}; --brand-logo: ${logoColours[network] ?? '#ffffff'}`} aria-hidden="true">
 			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false">
 				<path d={path} />
 			</svg>
