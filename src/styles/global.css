@@ -281,7 +281,8 @@ button:focus-visible {
 
 /* Hero */
 .hero {
-	padding-block: clamp(2.5rem, 7vw, 5.5rem) clamp(2rem, 5vw, 4rem);
+	/* At least 3rem at the bottom: the dancer on the brick line below stands in it */
+	padding-block: clamp(2.5rem, 7vw, 5.5rem) clamp(3rem, 6vw, 4rem);
 	overflow-x: clip;
 }
 
@@ -434,6 +435,29 @@ button:focus-visible {
 	opacity: 0.8;
 	-webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 	mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+
+/*
+ * A brick line with someone dancing on it. The dancer hangs above the line in the bottom padding of the hero, so the line keeps its usual place.
+ * Its height stays under that padding so it never covers the content.
+ */
+.brick-ledge {
+	position: relative;
+}
+
+.ledge-dancer {
+	position: absolute;
+	bottom: calc(100% - 3px);
+	left: 36%;
+	width: clamp(38px, 5vw, 60px);
+	pointer-events: none;
+}
+
+.ledge-dancer img {
+	display: block;
+	width: 100%;
+	height: auto;
+	user-select: none;
 }
 
 /* Sections */
@@ -1229,7 +1253,8 @@ button:focus-visible {
 	visibility: hidden;
 }
 
-:root[data-hoard='hidden'] .peeker {
+:root[data-hoard='hidden'] .peeker,
+:root[data-hoard='hidden'] .ledge-dancer {
 	display: none;
 }
 
