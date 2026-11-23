@@ -1,13 +1,21 @@
 ---
 import '../styles/global.css';
+import content from '../data/content.json';
 
 interface Props {
 	title: string;
 	description: string;
-	image?: string;
 }
 
-const { title, description, image } = Astro.props;
+const { title, description } = Astro.props;
+/*
+ * The card shown when a link to the site is shared (Telegram, Discord, Twitter…), with my portrait by Yacrical.
+ * The apps that build the card need full addresses, so they are built from the site address set in astro.config.mjs.
+ * The image is a JPEG because some of these apps do not read WebP.
+ */
+const preview = { file: '/preview.jpg', width: 997, height: 961, alt: 'Jecisc, a red dragon in a grey hoodie, drawn by Yacrical' };
+const pageUrl = new URL(Astro.url.pathname, Astro.site);
+const previewUrl = new URL(preview.file, Astro.site);
 ---
 
 <!doctype html>
@@ -17,9 +25,17 @@ const { title, description, image } = Astro.props;
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#12090f" />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={content.name} />
+		<meta property="og:url" content={pageUrl} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		{image && <meta property="og:image" content={image} />}
+		<meta property="og:image" content={previewUrl} />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:width" content={String(preview.width)} />
+		<meta property="og:image:height" content={String(preview.height)} />
+		<meta property="og:image:alt" content={preview.alt} />
+		<meta name="twitter:card" content="summary_large_image" />
 		<link rel="icon" href="/favicon.ico" sizes="any" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
