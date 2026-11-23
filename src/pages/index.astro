@@ -25,6 +25,15 @@ const heroChoices = ['yacrical-hoodie', 'banana-sinotus', 'watercolour-portrait'
 	});
 const sleepingSticker = artPieces.find((piece) => piece.id === 'sticker-sleep-plush');
 const peekingSticker = artPieces.find((piece) => piece.id === 'sticker-brick');
+/* Petting the portrait: after this many pets in a row, I react with this sticker and caption. The last one means "enough". */
+const petReactions = [
+	{ pets: 3, id: 'sticker-tongue', caption: "Hehe. Okay, that's nice." },
+	{ pets: 8, id: 'sticker-good-boy', caption: "Who's a good boy? Me. Obviously." },
+	{ pets: 14, id: 'sticker-crossed-arms', caption: "That's enough. I have a reputation." },
+].flatMap((reaction) => {
+	const sticker = artPieces.find((piece) => piece.id === reaction.id);
+	return sticker ? [{ pets: reaction.pets, file: sticker.file, caption: reaction.caption }] : [];
+});
 const artSection = artPieces.filter((piece) => piece.section === 'art');
 const spotlightPiece = artSection.find((piece) => 'featured' in piece && piece.featured);
 const artGrid = artSection.filter((piece) => piece !== spotlightPiece);
@@ -49,7 +58,7 @@ const year = new Date().getFullYear();
 				</div>
 				{
 					heroPiece && (
-						<figure class="hero-portrait" id="hero-portrait" data-hero-choices={JSON.stringify(heroChoices)}>
+						<figure class="hero-portrait" id="hero-portrait" data-hero-choices={JSON.stringify(heroChoices)} data-pet-reactions={JSON.stringify(petReactions)}>
 							<div class="hero-frame">
 								<img class="hero-awake" alt="" />
 								<noscript>
@@ -57,10 +66,12 @@ const year = new Date().getFullYear();
 								</noscript>
 								{sleepingSticker && <img class="hero-asleep" src={sleepingSticker.file} alt="" aria-hidden="true" />}
 							</div>
+							<img class="hero-reaction" alt="" aria-hidden="true" draggable="false" />
 							<figcaption>
 								<span class="caption-awake">Watercolour by me</span>
 								<span class="caption-asleep">Shh. I'm napping. Move to wake me up.</span>
 								<span class="caption-caught">You caught me! I'll stay here until you refresh the page.</span>
+								<span class="caption-pet"></span>
 							</figcaption>
 							{/* Runs while the page is parsed, so only the chosen image is downloaded and nothing flickers */}
 							<script is:inline>
@@ -202,13 +213,17 @@ const year = new Date().getFullYear();
 			</div>
 		)
 	}
-	<p class="caught-message" id="caught-message" role="status"></p>
 	<Hoard />
 
 	<footer class="site-footer">
 		<div class="wrap">
 			<span>© {year} · {content.name}</span>
 			<span id="hoard-count" aria-live="polite">{content.footerNote}</span>
+			{/* Filled by the script in Layout.astro, so it stays hidden without JavaScript */}
+			<details class="secrets" id="secrets" hidden>
+				<summary></summary>
+				<ul class="secrets-list"></ul>
+			</details>
 		</div>
 	</footer>
 </Layout>

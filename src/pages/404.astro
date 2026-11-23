@@ -10,7 +10,7 @@ const peekingSticker = artPieces.find((piece) => piece.id === 'sticker-brick');
 <Layout title={`Page not found · ${content.name}`} description={content.notFoundTitle}>
 	<SiteHeader linkPrefix="/" />
 
-	<main id="main" class="wrap lost">
+	<main id="main" class="wrap lost" data-secret="lost">
 		{peekingSticker && <img src={peekingSticker.file} alt="Jecisc peeking out of a brick wall" />}
 		<h1 class="gradient-text">{content.notFoundTitle}</h1>
 		<p>{content.notFoundText}</p>

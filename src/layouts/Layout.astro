@@ -47,9 +47,99 @@ const { title, description, image } = Astro.props;
 			<button type="button" class="zoom-arrow zoom-previous" aria-label="Previous artwork">‹</button>
 			<button type="button" class="zoom-arrow zoom-next" aria-label="Next artwork">›</button>
 		</dialog>
+		<p class="toast" id="toast" role="status"></p>
 		<script>
 			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 			const root = document.documentElement;
+
+			/* Short message at the top of the page for a few seconds */
+			const toast = document.getElementById('toast');
+			let toastTimer: number | undefined;
+			const showToast = (html: string, duration: number) => {
+				if (!toast) {
+					return;
+				}
+				toast.innerHTML = html;
+				toast.classList.add('is-visible');
+				window.clearTimeout(toastTimer);
+				toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), duration);
+			};
+
+			/*
+			 * Secrets: each easter egg found is remembered in this browser, and the footer counts them.
+			 * A new easter egg only needs a line in this list and a call to findSecret or announceSecret where it happens.
+			 */
+			const secrets = {
+				hoard: 'Added a piece to my hoard',
+				nap: 'Watched me fall asleep',
+				caught: 'Caught me peeking',
+				pet: 'Petted me',
+				console: 'Fed me from the console',
+				lost: 'Found my lost page',
+			};
+			type SecretId = keyof typeof secrets;
+			const secretIds = Object.keys(secrets) as SecretId[];
+			const secretsStorageKey = 'site-secrets';
+			const isSecretId = (value: unknown): value is SecretId => secretIds.includes(value as SecretId);
+			const readFoundSecrets = () => {
+				try {
+					const saved: unknown = JSON.parse(localStorage.getItem(secretsStorageKey) ?? '[]');
+					return new Set(Array.isArray(saved) ? saved.filter(isSecretId) : []);
+				} catch (error) {
+					return new Set<SecretId>();
+				}
+			};
+			const foundSecrets = readFoundSecrets();
+			const secretsPanel = document.getElementById('secrets') as HTMLDetailsElement | null;
+
+			const renderSecrets = () => {
+				if (!secretsPanel) {
+					return;
+				}
+				const summary = secretsPanel.querySelector('summary');
+				const list = secretsPanel.querySelector('.secrets-list');
+				if (summary) {
+					summary.textContent = foundSecrets.size === secretIds.length ? 'All secrets found. You know me too well.' : `Secrets found: ${foundSecrets.size}/${secretIds.length}`;
+				}
+				list?.replaceChildren(
+					...secretIds.map((id) => {
+						const item = document.createElement('li');
+						const isFound = foundSecrets.has(id);
+						item.classList.toggle('is-found', isFound);
+						item.textContent = isFound ? secrets[id] : '???';
+						return item;
+					}),
+				);
+				secretsPanel.hidden = false;
+			};
+
+			/* Remembers the secret and returns the toast line announcing it, or an empty string when it was already found */
+			const findSecret = (id: SecretId) => {
+				if (foundSecrets.has(id)) {
+					return '';
+				}
+				foundSecrets.add(id);
+				try {
+					localStorage.setItem(secretsStorageKey, JSON.stringify([...foundSecrets]));
+				} catch (error) {}
+				renderSecrets();
+				const progress = foundSecrets.size === secretIds.length ? "That's all of them!" : `${foundSecrets.size}/${secretIds.length}`;
+				return `<span class="toast-secret">Secret found: ${secrets[id]} · ${progress}</span>`;
+			};
+
+			const announceSecret = (id: SecretId) => {
+				const line = findSecret(id);
+				if (line) {
+					showToast(line, 4000);
+				}
+			};
+
+			renderSecrets();
+			/* A page can be a secret by itself, like the 404 page */
+			const pageSecret = document.querySelector<HTMLElement>('[data-secret]')?.dataset.secret;
+			if (isSecretId(pageSecret)) {
+				announceSecret(pageSecret);
+			}
 
 			/* Theme: dark ("hot chocolate time") by default, light ("daylight") on request */
 			const themeToggle = document.getElementById('theme-toggle') as HTMLButtonElement | null;
@@ -152,6 +242,7 @@ const { title, description, image } = Astro.props;
 				if (hoardCount) {
 					hoardCount.textContent = `${droppedPieces} ${droppedPieces === 1 ? 'piece' : 'pieces'} added to my hoard. Thank you, I'll take good care of them.`;
 				}
+				announceSecret('hoard');
 			});
 
 			/* Jecisc falls asleep in the hero after a while without activity */
@@ -160,12 +251,75 @@ const { title, description, image } = Astro.props;
 			const wakeUp = () => {
 				heroPortrait?.classList.remove('is-asleep');
 				window.clearTimeout(idleTimer);
-				idleTimer = window.setTimeout(() => heroPortrait?.classList.add('is-asleep'), 30000);
+				idleTimer = window.setTimeout(() => {
+					heroPortrait?.classList.add('is-asleep');
+					announceSecret('nap');
+				}, 30000);
 			};
 			if (heroPortrait) {
 				['pointermove', 'pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((eventName) => window.addEventListener(eventName, wakeUp, { passive: true }));
 				wakeUp();
 			}
+
+			/*
+			 * Petting the portrait: each click sends a heart, and enough pets in a row bring a reaction sticker and a caption.
+			 * The last reaction means "that's enough": I ignore pets for a few seconds, then everything goes back to normal.
+			 */
+			const petReactions: { pets: number; file: string; caption: string }[] = JSON.parse(heroPortrait?.dataset.petReactions ?? '[]');
+			const heroFrame = heroPortrait?.querySelector('.hero-frame');
+			const reactionImage = heroPortrait?.querySelector<HTMLImageElement>('.hero-reaction');
+			const petCaption = heroPortrait?.querySelector('.caption-pet');
+			let petCount = 0;
+			let isFedUp = false;
+			let petResetTimer: number | undefined;
+
+			const stopPetting = () => {
+				petCount = 0;
+				isFedUp = false;
+				heroPortrait?.classList.remove('is-petted');
+			};
+
+			const sendHeart = (x: number, y: number) => {
+				if (prefersReducedMotion.matches) {
+					return;
+				}
+				const heart = document.createElement('span');
+				heart.className = 'pet-heart';
+				heart.textContent = '♥';
+				heart.setAttribute('aria-hidden', 'true');
+				heart.style.left = `${x}px`;
+				heart.style.top = `${y}px`;
+				heart.style.setProperty('--drift', `${Math.random() * 40 - 20}px`);
+				heart.addEventListener('animationend', () => heart.remove());
+				document.body.append(heart);
+			};
+
+			heroFrame?.addEventListener('click', (event) => {
+				if (!heroPortrait || !reactionImage || !petCaption || isFedUp) {
+					return;
+				}
+				petCount += 1;
+				sendHeart(event.clientX, event.clientY);
+				if (petCount === 1) {
+					/* Loads the stickers early so they show at once */
+					petReactions.forEach((reaction) => {
+						new Image().src = reaction.file;
+					});
+				}
+				const reaction = petReactions.find((candidate) => candidate.pets === petCount);
+				if (reaction) {
+					reactionImage.src = reaction.file;
+					petCaption.textContent = reaction.caption;
+					heroPortrait.classList.add('is-petted');
+					if (!prefersReducedMotion.matches) {
+						reactionImage.animate([{ scale: 0.7 }, { scale: 1 }], { duration: 350, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1.4)' });
+					}
+					isFedUp = reaction === petReactions[petReactions.length - 1];
+					announceSecret('pet');
+				}
+				window.clearTimeout(petResetTimer);
+				petResetTimer = window.setTimeout(stopPetting, isFedUp ? 6000 : 2500);
+			});
 
 			/*
 			 * Now and then, Jecisc peeks from behind his hoard.
@@ -174,7 +328,6 @@ const { title, description, image } = Astro.props;
 			 * Once caught, he replaces the portrait at the top of the page until the page is reloaded.
 			 */
 			const peeker = document.getElementById('peeker');
-			const caughtMessage = document.getElementById('caught-message');
 			const runDuration = 15000;
 			const fleeRadius = 60;
 			let peekerState: 'hidden' | 'peeking' | 'running' | 'leaving' | 'caught' = 'hidden';
@@ -323,11 +476,7 @@ const { title, description, image } = Astro.props;
 					portraitImage.alt = 'Jecisc peeking over a brick wall, caught by you';
 					heroPortrait.classList.add('is-caught');
 				}
-				if (caughtMessage) {
-					caughtMessage.innerHTML = 'You caught me! <a href="#top">I now guard the top of the page</a> until you refresh.';
-					caughtMessage.classList.add('is-visible');
-					window.setTimeout(() => caughtMessage.classList.remove('is-visible'), 7000);
-				}
+				showToast(`You caught me! <a href="#top">I now guard the top of the page</a> until you refresh.${findSecret('caught')}`, 7000);
 			};
 
 			if (peeker) {
@@ -355,6 +504,22 @@ const { title, description, image } = Astro.props;
 				});
 				window.setTimeout(peek, 10000 + Math.random() * 8000);
 			}
+
+			/* For the curious who open the developer tools: a hello, and a command that feeds me chocolate */
+			console.log('%cJecisc 🐉', 'font: 700 24px Georgia, serif; color: #fb7c38; text-shadow: 0 0 8px #d65234;');
+			console.log("Looking at my code? It's on GitHub: https://github.com/jecisc/furry-website\nThe gold stays here, though.\n\nPsst. Type feedJecisc() and press Enter.");
+			let chocolatesEaten = 0;
+			const feedJecisc = () => {
+				chocolatesEaten += 1;
+				if (!decorationsHidden()) {
+					for (let index = 0; index < 5; index++) {
+						dropPiece(600 + Math.random() * 1200, true);
+					}
+				}
+				announceSecret('console');
+				return chocolatesEaten === 1 ? 'Nom. Chocolate is the way to my heart.' : `Nom. That makes ${chocolatesEaten * 5} chocolates. Keep them coming.`;
+			};
+			Object.assign(window, { feedJecisc });
 
 			/* Buttons that copy a text (a username, a colour code): their [data-copy-feedback] element briefly says whether it worked */
 			document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {

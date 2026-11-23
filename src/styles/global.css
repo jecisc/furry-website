@@ -424,6 +424,56 @@ button:focus-visible {
 	}
 }
 
+/* Petting the portrait: hearts float up from the click, and enough pets bring a sticker and a caption */
+.hero-reaction {
+	position: absolute;
+	left: -1rem;
+	bottom: 2.5rem;
+	z-index: 2;
+	width: 42%;
+	filter: drop-shadow(0 6px 16px var(--shadow));
+	rotate: -8deg;
+	scale: 0.6;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		opacity 0.25s ease,
+		scale 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.4);
+}
+
+.hero-portrait.is-petted .hero-reaction {
+	scale: 1;
+	opacity: 1;
+}
+
+.hero-portrait .caption-pet,
+.hero-portrait.is-petted figcaption > span:not(.caption-pet) {
+	display: none;
+}
+
+.hero-portrait.is-petted .caption-pet {
+	display: inline;
+}
+
+.pet-heart {
+	position: fixed;
+	z-index: 25;
+	color: var(--pink);
+	font-size: 1.5rem;
+	line-height: 1;
+	text-shadow: 0 0 10px var(--glow);
+	pointer-events: none;
+	transform: translate(-50%, -50%);
+	animation: pet-heart 0.9s ease-out forwards;
+}
+
+@keyframes pet-heart {
+	to {
+		transform: translate(calc(-50% + var(--drift, 0px)), -350%) scale(1.4);
+		opacity: 0;
+	}
+}
+
 /* Brick dividers, for the red-brick houses of the north of France */
 .brick-divider {
 	height: 22px;
@@ -1212,8 +1262,8 @@ button:focus-visible {
 	-webkit-user-drag: none;
 }
 
-/* Shown for a few seconds when the peeking dragon is caught */
-.caught-message {
+/* Short message at the top of the page for a few seconds: the peeking dragon caught, a secret found */
+.toast {
 	position: fixed;
 	top: 4.75rem;
 	left: 50%;
@@ -1237,13 +1287,46 @@ button:focus-visible {
 		visibility 0.4s;
 }
 
-.caught-message.is-visible {
+.toast.is-visible {
 	transform: translate(-50%, 0);
 	opacity: 1;
 	visibility: visible;
 }
 
-.caught-message a {
+.toast a {
+	color: var(--eye);
+}
+
+.toast-secret {
+	display: block;
+	font-size: 0.85rem;
+	color: var(--eye);
+}
+
+.toast-secret:not(:first-child) {
+	margin-top: 0.3rem;
+}
+
+/* Secrets found, in the footer: the ones not found yet stay "???" */
+.secrets summary {
+	cursor: pointer;
+}
+
+.secrets-list {
+	display: grid;
+	gap: 0.2rem;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.85rem;
+}
+
+.secrets-list .is-found {
+	color: var(--ink);
+}
+
+.secrets-list .is-found::before {
+	content: '✓ ';
 	color: var(--eye);
 }
 
