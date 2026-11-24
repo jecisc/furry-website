@@ -488,7 +488,9 @@ const previewUrl = new URL(preview.file, Astro.site);
 				const portraitImage = heroPortrait?.querySelector<HTMLImageElement>('.hero-awake');
 				const stickerImage = peeker.querySelector('img');
 				if (heroPortrait && portraitImage && stickerImage) {
-					portraitImage.src = stickerImage.src;
+					/* The portrait's own sizes would win over a new src, so they go first */
+					portraitImage.removeAttribute('srcset');
+					portraitImage.src = stickerImage.dataset.caughtSrc ?? stickerImage.currentSrc;
 					portraitImage.alt = 'Jecisc peeking over a brick wall, caught by you';
 					heroPortrait.classList.add('is-caught');
 				}

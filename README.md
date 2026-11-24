@@ -30,12 +30,15 @@ The project needs Node.js 22.23.4 or newer. With nvm: `nvm use 22`.
 public/                        Files served as they are
   CNAME                        The custom domain for GitHub Pages
   favicon.ico, favicon.png, apple-touch-icon.png
-  art/                         The web versions of the artworks and stickers (WebP)
+  preview.jpg                  The image shown when a link to the site is shared (my portrait by Yacrical)
+  decor/                       BMO, animated, used as it is
 src/
   assets/                      My original files (not in git, see below)
+  art/                         The web versions of the artworks and stickers (WebP, at most 1200 pixels)
   data/
     content.json               Texts of the page, colours of my palette, my social links, the sticker pack link
     art.json                   The list of artworks and stickers
+    artworks.ts                Loads the files listed in art.json, for the pages and components
     artists.json               Artist name → link to their page
   pages/
     index.astro                The home page, with all its sections
@@ -53,7 +56,7 @@ astro.config.mjs               Astro settings (the address of the site)
 PLAN.md                        Old planning notes from the start of the project
 ```
 
-`src/assets/` is in `.gitignore` on purpose. It holds the original files: they are large, and some show other people's characters that must never be published. Only the web copies in `public/art/` are committed. Never move anything from `src/assets/Sky/` into `public/`.
+`src/assets/` is in `.gitignore` on purpose. It holds the original files: they are large, and some show other people's characters that must never be published. Only the web copies in `src/art/` are committed. Never copy anything from `src/assets/Sky/` into `src/art/` or `public/`.
 
 ## Common updates
 
@@ -76,10 +79,10 @@ A new network also needs its logo and colour in `src/components/SocialIcon.astro
 ### Add an artwork or a sticker
 
 1. Put the original in `src/assets/`.
-2. Make the web copy in `public/art/`, at most 1200 pixels on each side, in WebP. This command does it with sharp, which Astro already installs, and prints the size for the next step:
+2. Make the web copy in `src/art/`, at most 1200 pixels on each side, in WebP. This command does it with sharp, which Astro already installs:
 
    ```bash
-   node -e "import('sharp').then(({ default: sharp }) => sharp(process.argv[1]).resize({ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true }).webp({ quality: 82, alphaQuality: 90 }).toFile(process.argv[2])).then((info) => console.log('width', info.width, 'height', info.height))" src/assets/the-original.png public/art/the-new-piece.webp
+   node -e "import('sharp').then(({ default: sharp }) => sharp(process.argv[1]).resize({ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true }).webp({ quality: 82, alphaQuality: 90 }).toFile(process.argv[2])).then((info) => console.log('width', info.width, 'height', info.height))" src/assets/the-original.png src/art/the-new-piece.webp
    ```
 
 3. Add an entry to `src/data/art.json`:
@@ -87,23 +90,22 @@ A new network also needs its logo and colour in `src/components/SocialIcon.astro
    ```json
    {
    	"id": "the-new-piece",
-   	"file": "/art/the-new-piece.webp",
+   	"file": "the-new-piece.webp",
    	"artist": "Artist name",
    	"section": "art",
-   	"gate": "none",
-   	"width": 900,
-   	"height": 1200
+   	"gate": "none"
    }
    ```
 
    - `section` is `art` or `stickers`.
    - `gate` is `none`, or `explicit` to blur the image behind a "Peek (18+)" button. The blur is only a curtain: the file can still be opened by its address.
-   - `width` and `height` are the size printed by the command. They keep the layout from jumping while the image loads.
    - `"featured": true` puts the piece in the big spotlight of the Art section. Only one piece should have it.
 
 4. If the artist is new, add their link to `src/data/artists.json`. The name must be written exactly as in `art.json`.
 
 The order of `art.json` is the order on the page.
+
+There is nothing else to do for the image sizes. At each build, Astro makes smaller copies of every file in `src/art/` and each page loads the smallest copy that stays sharp, so the grids load about 0.5 to 1.3 MB instead of 3 MB. The zoom opens the full file. The sizes of these copies are in the components that show the images, next to the `<Image>` tags, with a comment on the width the image is shown at.
 
 ### Change the portrait at the top
 

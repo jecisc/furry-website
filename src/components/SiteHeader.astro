@@ -1,6 +1,7 @@
 ---
 import content from '../data/content.json';
-import artPieces from '../data/art.json';
+import { Image } from 'astro:assets';
+import { artworkById } from '../data/artworks';
 
 interface Props {
 	/** Prefix for the section links, empty on the home page and "/" on other pages. */
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { linkPrefix = '' } = Astro.props;
-const hotChocolateSticker = artPieces.find((piece) => piece.id === 'sticker-hot-chocolate');
+const hotChocolateSticker = artworkById('sticker-hot-chocolate');
 
 const navigationItems = [
 	{ label: 'Character', href: `${linkPrefix}#character` },
@@ -28,7 +29,7 @@ const navigationItems = [
 			{navigationItems.map((item) => <a href={item.href}>{item.label}</a>)}
 		</nav>
 		<button type="button" class="theme-toggle" id="theme-toggle">
-			{hotChocolateSticker && <img src={hotChocolateSticker.file} alt="" width="26" height="26" />}
+			{hotChocolateSticker && <Image src={hotChocolateSticker.image} width={52} height={52} alt="" />}
 			<span class="theme-toggle-label">Back to daylight</span>
 		</button>
 	</div>

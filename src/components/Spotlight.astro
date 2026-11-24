@@ -1,15 +1,11 @@
 ---
+import { Image } from 'astro:assets';
 import ArtistName from './ArtistName.astro';
 import artists from '../data/artists.json';
+import type { Artwork } from '../data/artworks';
 
 interface Props {
-	piece: {
-		file: string;
-		artist: string;
-		gate: string;
-		width: number;
-		height: number;
-	};
+	piece: Artwork;
 }
 
 const { piece } = Astro.props;
@@ -19,10 +15,11 @@ const alt = `Artwork of Jecisc by ${artist}`;
 ---
 
 <div class="spotlight">
-	<figure class:list={['spotlight-figure', isGated && 'is-blurred']} style={`--ratio: ${(piece.width / piece.height).toFixed(4)}`}>
+	<figure class:list={['spotlight-figure', isGated && 'is-blurred']} style={`--ratio: ${(piece.image.width / piece.image.height).toFixed(4)}`}>
 		<div class="spotlight-frame">
-			<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
-				<img src={piece.file} alt={alt} width={piece.width} height={piece.height} loading="lazy" />
+			<button type="button" class="zoom" data-zoom={piece.image.src} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
+				{/* About 38rem wide next to its text from 800px, the full width below */}
+				<Image src={piece.image} widths={[600, 1000]} sizes="(min-width: 800px) 38rem, 92vw" alt={alt} loading="lazy" />
 			</button>
 			{
 				isGated && (

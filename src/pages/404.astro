@@ -2,16 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import content from '../data/content.json';
-import artPieces from '../data/art.json';
+import { Image } from 'astro:assets';
+import { artworkById } from '../data/artworks';
 
-const peekingSticker = artPieces.find((piece) => piece.id === 'sticker-brick');
+const peekingSticker = artworkById('sticker-brick');
 ---
 
 <Layout title={`Page not found · ${content.name}`} description={content.notFoundTitle}>
 	<SiteHeader linkPrefix="/" />
 
 	<main id="main" class="wrap lost" data-secret="lost">
-		{peekingSticker && <img src={peekingSticker.file} alt="Jecisc peeking out of a brick wall" />}
+		{peekingSticker && <Image src={peekingSticker.image} widths={[300, 600]} sizes="min(18rem, 70vw)" alt="Jecisc peeking out of a brick wall" />}
 		<h1 class="gradient-text">{content.notFoundTitle}</h1>
 		<p>{content.notFoundText}</p>
 		<a class="button button--primary" href="/">Back to the hoard</a>

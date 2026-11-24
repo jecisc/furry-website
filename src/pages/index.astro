@@ -6,38 +6,50 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SocialIcon from '../components/SocialIcon.astro';
 import Spotlight from '../components/Spotlight.astro';
 import content from '../data/content.json';
-import artPieces from '../data/art.json';
+import { Image, getImage } from 'astro:assets';
+import { artworks, artworkById } from '../data/artworks';
 
-const heroPiece = artPieces.find((piece) => piece.id === 'watercolour-portrait');
-/* The portrait at the top is picked at random among these on each visit */
-const heroChoices = ['yacrical-hoodie', 'banana-sinotus', 'watercolour-portrait', 'bre-hoodie', 'falvie-jecisc']
-	.map((id) => artPieces.find((piece) => piece.id === id))
-	.filter((piece) => piece !== undefined)
-	.map((piece) => {
-		const isMine = piece.artist === content.name;
-		return {
-			file: piece.file,
-			width: piece.width,
-			height: piece.height,
-			alt: isMine ? 'Watercolour portrait of Jecisc, a red dragon' : `Jecisc, a red dragon, drawn by ${piece.artist}`,
-			caption: isMine ? 'Watercolour by me' : `Me, by ${piece.artist}`,
-		};
-	});
-const sleepingSticker = artPieces.find((piece) => piece.id === 'sticker-sleep-plush');
-const peekingSticker = artPieces.find((piece) => piece.id === 'sticker-brick');
-/* Petting the portrait: after this many pets in a row, I react with this sticker and caption. The last one means "enough". */
-const petReactions = [
-	{ pets: 3, id: 'sticker-tongue', caption: "Hehe. Okay, that's nice." },
-	{ pets: 8, id: 'sticker-good-boy', caption: "Who's a good boy? Me. Obviously." },
-	{ pets: 14, id: 'sticker-crossed-arms', caption: "That's enough. I have a reputation." },
-].flatMap((reaction) => {
-	const sticker = artPieces.find((piece) => piece.id === reaction.id);
-	return sticker ? [{ pets: reaction.pets, file: sticker.file, caption: reaction.caption }] : [];
-});
-const artSection = artPieces.filter((piece) => piece.section === 'art');
+const heroPiece = artworkById('watercolour-portrait');
+/* The portrait frame is at most 26rem wide, and almost the full width on phones */
+const heroWidths = [450, 900];
+const heroSizes = '(max-width: 50rem) 90vw, 26rem';
+/* The portrait at the top is picked at random among these on each visit, by the script next to it */
+const heroChoices = await Promise.all(
+	['yacrical-hoodie', 'banana-sinotus', 'watercolour-portrait', 'bre-hoodie', 'falvie-jecisc']
+		.map((id) => artworkById(id))
+		.filter((piece) => piece !== undefined)
+		.map(async (piece) => {
+			const isMine = piece.artist === content.name;
+			const resized = await getImage({ src: piece.image, widths: heroWidths, sizes: heroSizes });
+			return {
+				src: resized.src,
+				srcset: resized.srcSet.attribute,
+				width: piece.image.width,
+				height: piece.image.height,
+				alt: isMine ? 'Watercolour portrait of Jecisc, a red dragon' : `Jecisc, a red dragon, drawn by ${piece.artist}`,
+				caption: isMine ? 'Watercolour by me' : `Me, by ${piece.artist}`,
+			};
+		}),
+);
+const sleepingSticker = artworkById('sticker-sleep-plush');
+const peekingSticker = artworkById('sticker-brick');
+/* Once caught, the peeking sticker takes the place of the portrait, so it needs a copy at the size of the portrait too */
+const caughtSticker = peekingSticker && (await getImage({ src: peekingSticker.image, width: 900 }));
+/* Petting the portrait: after this many pets in a row, I react with this sticker and caption. The last one means "enough". The sticker covers 42% of the portrait. */
+const petReactions = await Promise.all(
+	[
+		{ pets: 3, id: 'sticker-tongue', caption: "Hehe. Okay, that's nice." },
+		{ pets: 8, id: 'sticker-good-boy', caption: "Who's a good boy? Me. Obviously." },
+		{ pets: 14, id: 'sticker-crossed-arms', caption: "That's enough. I have a reputation." },
+	].flatMap((reaction) => {
+		const sticker = artworkById(reaction.id);
+		return sticker ? [getImage({ src: sticker.image, width: 400 }).then((resized) => ({ pets: reaction.pets, file: resized.src, caption: reaction.caption }))] : [];
+	}),
+);
+const artSection = artworks.filter((piece) => piece.section === 'art');
 const spotlightPiece = artSection.find((piece) => 'featured' in piece && piece.featured);
 const artGrid = artSection.filter((piece) => piece !== spotlightPiece);
-const stickerSection = artPieces.filter((piece) => piece.section === 'stickers');
+const stickerSection = artworks.filter((piece) => piece.section === 'stickers');
 const year = new Date().getFullYear();
 ---
 
@@ -58,13 +70,13 @@ const year = new Date().getFullYear();
 				</div>
 				{
 					heroPiece && (
-						<figure class="hero-portrait" id="hero-portrait" data-hero-choices={JSON.stringify(heroChoices)} data-pet-reactions={JSON.stringify(petReactions)}>
+						<figure class="hero-portrait" id="hero-portrait" data-hero-choices={JSON.stringify(heroChoices)} data-pet-reactions={JSON.stringify(petReactions)} data-hero-sizes={heroSizes}>
 							<div class="hero-frame">
 								<img class="hero-awake" alt="" />
 								<noscript>
-									<img class="hero-awake" src={heroPiece.file} alt="Watercolour portrait of Jecisc, a red dragon" width={heroPiece.width} height={heroPiece.height} />
+									<Image class="hero-awake" src={heroPiece.image} widths={heroWidths} sizes={heroSizes} alt="Watercolour portrait of Jecisc, a red dragon" />
 								</noscript>
-								{sleepingSticker && <img class="hero-asleep" src={sleepingSticker.file} alt="" aria-hidden="true" />}
+								{sleepingSticker && <Image class="hero-asleep" src={sleepingSticker.image} widths={heroWidths} sizes={heroSizes} alt="" aria-hidden="true" />}
 							</div>
 							<img class="hero-reaction" alt="" aria-hidden="true" draggable="false" />
 							<figcaption>
@@ -83,7 +95,9 @@ const year = new Date().getFullYear();
 									image.width = choice.width;
 									image.height = choice.height;
 									image.alt = choice.alt;
-									image.src = choice.file;
+									image.sizes = figure.dataset.heroSizes;
+									image.srcset = choice.srcset;
+									image.src = choice.src;
 									figure.style.setProperty('--hero-ratio', `${choice.width} / ${choice.height}`);
 									figure.querySelector('.caption-awake').textContent = choice.caption;
 								})();
@@ -96,8 +110,8 @@ const year = new Date().getFullYear();
 
 		<div class="brick-ledge" aria-hidden="true">
 			<picture class="ledge-dancer">
-				<source srcset="/art/bmo-still.webp" media="(prefers-reduced-motion: reduce)" />
-				<img src="/art/bmo-dancing.webp" alt="" width="89" height="103" draggable="false" />
+				<source srcset="/decor/bmo-still.webp" media="(prefers-reduced-motion: reduce)" />
+				<img src="/decor/bmo-dancing.webp" alt="" width="89" height="103" draggable="false" />
 			</picture>
 			<div class="brick-divider"></div>
 		</div>
@@ -209,7 +223,8 @@ const year = new Date().getFullYear();
 	{
 		peekingSticker && (
 			<div class="peeker" id="peeker" aria-hidden="true">
-				<img src={peekingSticker.file} alt="" draggable="false" />
+				{/* The peeker is at most 9rem wide */}
+				<Image src={peekingSticker.image} widths={[160, 320]} sizes="9rem" alt="" draggable="false" data-caught-src={caughtSticker?.src} />
 			</div>
 		)
 	}

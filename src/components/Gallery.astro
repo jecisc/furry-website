@@ -1,19 +1,11 @@
 ---
+import { Image } from 'astro:assets';
 import ArtistName from './ArtistName.astro';
 import artists from '../data/artists.json';
-
-interface Piece {
-	id: string;
-	file: string;
-	artist: string;
-	section: string;
-	gate: string;
-	width: number;
-	height: number;
-}
+import type { Artwork } from '../data/artworks';
 
 interface Props {
-	pieces: Piece[];
+	pieces: Artwork[];
 	/**
 	 * "justified" keeps each artwork's own shape in rows that fill the width.
 	 * "grid" gives every piece the same size, which suits the square stickers.
@@ -22,6 +14,11 @@ interface Props {
 }
 
 const { pieces, layout = 'justified' } = Astro.props;
+/*
+ * Sizes of the copies made for the thumbnails, and how wide a thumbnail is shown, so the browser picks the smallest copy that stays sharp.
+ * Justified rows are 11rem high, so their pieces are rarely wider than 20rem. Grid cells are at least 9rem, two per row on phones.
+ */
+const thumbnail = layout === 'grid' ? { widths: [240, 480], sizes: '(max-width: 40rem) 45vw, 12rem' } : { widths: [360, 720], sizes: '(max-width: 40rem) 90vw, 20rem' };
 ---
 
 <ul class:list={['gallery', `gallery--${layout}`]}>
@@ -31,11 +28,11 @@ const { pieces, layout = 'justified' } = Astro.props;
 			const artist = piece.artist.trim();
 			const alt = `Artwork of Jecisc by ${artist}`;
 			return (
-				<li style={`--ratio: ${(piece.width / piece.height).toFixed(4)}`}>
+				<li style={`--ratio: ${(piece.image.width / piece.image.height).toFixed(4)}`}>
 					<figure class:list={['piece', isGated && 'is-blurred']}>
 						<div class="piece-frame">
-							<button type="button" class="zoom" data-zoom={piece.file} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
-								<img src={piece.file} alt={alt} width={piece.width} height={piece.height} loading="lazy" />
+							<button type="button" class="zoom" data-zoom={piece.image.src} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
+								<Image src={piece.image} widths={thumbnail.widths} sizes={thumbnail.sizes} alt={alt} loading="lazy" />
 							</button>
 							{isGated && (
 								<button type="button" class="reveal" data-reveal>
