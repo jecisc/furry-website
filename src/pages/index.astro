@@ -148,16 +148,12 @@ const year = new Date().getFullYear();
 					<dd>Red dragon</dd>
 					<dt>From</dt>
 					<dd>The north of France</dd>
+					<dt>Height</dt>
+					<dd>{content.height}</dd>
 					<dt>Traits</dt>
 					<dd>
 						<ul class="tag-list">
 							{content.traits.map((trait) => <li>{trait}</li>)}
-						</ul>
-					</dd>
-					<dt>Outfits</dt>
-					<dd>
-						<ul class="tag-list tag-list--warm">
-							{content.outfits.map((outfit) => <li>{outfit}</li>)}
 						</ul>
 					</dd>
 				</dl>

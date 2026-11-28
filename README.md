@@ -63,7 +63,7 @@ PLAN.md                        Old planning notes from the start of the project
 
 ### Change a text
 
-Most texts are in `src/data/content.json`: my intro, tagline, description, traits, outfits, section intros, the 404 texts and the footer note. Some short captions are written directly in `src/pages/index.astro`, like the hero captions and the petting reactions.
+Most texts are in `src/data/content.json`: my intro, tagline, description, traits, section intros, the 404 texts and the footer note. Some short captions are written directly in `src/pages/index.astro`, like the hero captions and the petting reactions.
 
 Write in first person: the site speaks as me.
 

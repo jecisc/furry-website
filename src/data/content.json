@@ -2,9 +2,9 @@
 	"name": "Jecisc",
 	"intro": "I'm Jecisc, a red dragon from the north of France.",
 	"description": [
-		"I'm a red dragon from the north of France.",
-		"Placeholder: a longer description in the owner's own words goes here."
+		"I'm a red dragon from the north of France. I guard a hoard of gold, chocolate and Blåhaj, and I take my naps very seriously. I'm sociable, kind and caring, but don't tell anyone."
 	],
+	"height": "1.69 m (5 ft 6½ in)",
 	"traits": [
 		"Sarcastic",
 		"Stubborn",
@@ -18,11 +18,6 @@
 		{ "part": "Eyes", "colour": "#fec846" },
 		{ "part": "Horns", "colour": "#f0c8a8" }
 	],
-	"outfits": [
-		"Underwear",
-		"Casual hoodie",
-		"Jeans"
-	],
 	"socials": [
 		{ "network": "Barq!", "handle": "jecisc" },
 		{ "network": "Telegram", "handle": "Jecisc", "url": "https://t.me/Jecisc" },
@@ -32,7 +27,7 @@
 		{ "network": "Snapchat", "handle": "jecisc1", "url": "https://www.snapchat.com/add/jecisc1" }
 	],
 	"linksIntro": "Say hi. I answer faster when there is chocolate involved.",
-	"tagline": "Red dragon from the north of France. I hoard gold, chocolate and naps. Sarcastic, stubborn, secretly kind.",
+	"tagline": "Red dragon from the north of France. I hoard gold, chocolate, Blåhaj and naps. Sarcastic, stubborn, secretly kind.",
 	"artIntro": "Me, as drawn by people far more patient than I am. Each piece is credited to its artist. A few hide behind a curtain: peek only if you are 18 or older.",
 	"myArtIntro": "When I am not napping on my hoard, I make things: embroidery, pencil drawings of animals, and painted miniature teams.",
 	"stickersIntro": "Some say that images are worth thousand words :)",
