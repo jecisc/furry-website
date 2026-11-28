@@ -2,14 +2,15 @@
 import { Image } from 'astro:assets';
 import ArtistName from './ArtistName.astro';
 import artists from '../data/artists.json';
-import type { Artwork } from '../data/artworks';
+import { gateLabelOf, type Artwork } from '../data/artworks';
 
 interface Props {
 	piece: Artwork;
 }
 
 const { piece } = Astro.props;
-const isGated = piece.gate !== 'none';
+const gateLabel = gateLabelOf(piece);
+const isGated = gateLabel !== undefined;
 const artist = piece.artist.trim();
 const alt = `Artwork of Jecisc by ${artist}`;
 ---
@@ -18,13 +19,13 @@ const alt = `Artwork of Jecisc by ${artist}`;
 	<figure class:list={['spotlight-figure', isGated && 'is-blurred']} style={`--ratio: ${(piece.image.width / piece.image.height).toFixed(4)}`}>
 		<div class="spotlight-frame">
 			<button type="button" class="zoom" data-zoom={piece.image.src} data-alt={alt} data-artist={artist} data-artist-url={(artists as Record<string, string>)[artist]}>
-				{/* About 38rem wide next to its text from 800px, the full width below */}
-				<Image src={piece.image} widths={[600, 1000]} sizes="(min-width: 800px) 38rem, 92vw" alt={alt} loading="lazy" />
+				{/* About 57rem wide next to its text from 800px, the full width below */}
+				<Image src={piece.image} widths={[600, 1200]} sizes="(min-width: 800px) 57rem, 92vw" alt={alt} loading="lazy" />
 			</button>
 			{
 				isGated && (
 					<button type="button" class="reveal" data-reveal>
-						Peek (18+)
+						{gateLabel}
 					</button>
 				)
 			}

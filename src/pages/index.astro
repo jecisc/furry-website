@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Carousel from '../components/Carousel.astro';
 import Gallery from '../components/Gallery.astro';
 import Hoard from '../components/Hoard.astro';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -50,6 +51,13 @@ const artSection = artworks.filter((piece) => piece.section === 'art');
 const spotlightPiece = artSection.find((piece) => 'featured' in piece && piece.featured);
 const artGrid = artSection.filter((piece) => piece !== spotlightPiece);
 const stickerSection = artworks.filter((piece) => piece.section === 'stickers');
+/* My own art, one carousel per technique. In each, the first piece of art.json is the main picture. */
+const myArtCarousels = [
+	{ title: 'Embroidery', section: 'embroidery' },
+	{ title: 'Pencil drawings', section: 'pencil' },
+	{ title: 'Miniature painting', section: 'miniatures' },
+	{ title: 'Other', section: 'other' },
+].map((carousel) => ({ title: carousel.title, pieces: artworks.filter((piece) => piece.section === carousel.section) }));
 const year = new Date().getFullYear();
 ---
 
@@ -179,6 +187,19 @@ const year = new Date().getFullYear();
 					<a class="button button--primary" href={content.stickerPackUrl} target="_blank" rel="noopener noreferrer">Add the pack on Telegram</a>
 				</p>
 				<Gallery pieces={stickerSection} layout="grid" />
+			</div>
+		</section>
+
+		<div class="brick-divider" aria-hidden="true"></div>
+
+		<section class="section" id="my-art">
+			<div class="wrap">
+				<p class="eyebrow">Made with my own claws</p>
+				<h2 class="gradient-text">My art</h2>
+				<p class="section-intro">{content.myArtIntro}</p>
+				<div class="carousel-list">
+					{myArtCarousels.map((carousel) => <Carousel title={carousel.title} pieces={carousel.pieces} />)}
+				</div>
 			</div>
 		</section>
 

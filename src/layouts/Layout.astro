@@ -563,11 +563,122 @@ const previewUrl = new URL(preview.file, Astro.site);
 				});
 			});
 
-			/* Gated artworks */
+			/*
+			 * Carousels of my art: the focused slide is the one closest to the middle of the track. It is shown big, the others small and dimmed.
+			 * The arrows and a click on a side slide bring that slide to the middle. Scrolling by hand (trackpad, swipe) works too.
+			 * They loop without end: the track holds a copy of all the slides before the real ones and another after them, so the last slide sits left of the first one.
+			 * When the scroll stops on a copy, the track jumps without animation to the same real slide, which looks the same.
+			 */
+			document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {
+				const track = carousel.querySelector<HTMLElement>('.carousel-track');
+				const realSlides = [...carousel.querySelectorAll<HTMLElement>('.carousel-slide')];
+				const previousButton = carousel.querySelector<HTMLButtonElement>('[data-carousel-previous]');
+				const nextButton = carousel.querySelector<HTMLButtonElement>('[data-carousel-next]');
+				const counter = carousel.querySelector('[data-carousel-current]');
+				const progress = carousel.querySelector<HTMLElement>('[data-carousel-progress]');
+				const count = realSlides.length;
+				if (!track || count === 0) {
+					return;
+				}
+				const copyOf = (slide: HTMLElement) => {
+					const copy = slide.cloneNode(true) as HTMLElement;
+					copy.classList.remove('is-current');
+					copy.dataset.carouselCopy = '';
+					copy.setAttribute('aria-hidden', 'true');
+					copy.querySelectorAll('button').forEach((button) => (button.tabIndex = -1));
+					return copy;
+				};
+				if (count > 1) {
+					track.prepend(...realSlides.map(copyOf));
+					track.append(...realSlides.map(copyOf));
+				}
+				const slides = [...track.querySelectorAll<HTMLElement>('.carousel-slide')];
+				/* Index in slides of the first real slide */
+				const firstReal = count > 1 ? count : 0;
+				let current = firstReal;
+				const centreOf = (element: Element) => {
+					const rect = element.getBoundingClientRect();
+					return rect.left + rect.width / 2;
+				};
+				const closestToMiddle = () => {
+					const middle = centreOf(track);
+					const distances = slides.map((slide) => Math.abs(centreOf(slide) - middle));
+					return distances.indexOf(Math.min(...distances));
+				};
+				const realIndexOf = (index: number) => (((index - firstReal) % count) + count) % count;
+				const show = (index: number) => {
+					current = index;
+					slides.forEach((slide, slideIndex) => slide.classList.toggle('is-current', slideIndex === index));
+					const realIndex = realIndexOf(index);
+					if (counter) {
+						counter.textContent = String(realIndex + 1);
+					}
+					if (progress) {
+						progress.style.width = `${((realIndex + 1) / count) * 100}%`;
+					}
+				};
+				const goTo = (index: number, isInstant = false) => {
+					const slide = slides[Math.max(0, Math.min(slides.length - 1, index))];
+					track.scrollTo({ left: slide.offsetLeft + slide.offsetWidth / 2 - track.clientWidth / 2, behavior: isInstant || prefersReducedMotion.matches ? 'instant' : 'smooth' });
+				};
+				/* Back on the real slide once the scroll has stopped on a copy */
+				const settle = () => {
+					const index = closestToMiddle();
+					const realIndex = firstReal + realIndexOf(index);
+					if (index !== realIndex) {
+						goTo(realIndex, true);
+					}
+					show(realIndex);
+				};
+				const step = (direction: 1 | -1) => goTo(current + direction);
+				previousButton?.addEventListener('click', () => step(-1));
+				nextButton?.addEventListener('click', () => step(1));
+				/* A click on a side slide brings it to the middle, instead of opening the zoom or revealing a blurred picture */
+				slides.forEach((slide, index) => {
+					slide.addEventListener(
+						'click',
+						(event) => {
+							if (index !== current) {
+								event.preventDefault();
+								event.stopPropagation();
+								goTo(index);
+							}
+						},
+						true,
+					);
+				});
+				track.addEventListener('keydown', (event) => {
+					if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+						event.preventDefault();
+						step(event.key === 'ArrowLeft' ? -1 : 1);
+					}
+				});
+				let updateFrame = 0;
+				let settleTimer: number | undefined;
+				track.addEventListener(
+					'scroll',
+					() => {
+						cancelAnimationFrame(updateFrame);
+						updateFrame = requestAnimationFrame(() => show(closestToMiddle()));
+						window.clearTimeout(settleTimer);
+						settleTimer = window.setTimeout(settle, 150);
+					},
+					{ passive: true },
+				);
+				/* Centres the focused slide again when the track changes size: once the styles apply, and when the window is resized */
+				new ResizeObserver(() => goTo(current, true)).observe(track);
+			});
+
+			/* Gated artworks: revealing one also reveals its copies in a looping carousel */
 			document.querySelectorAll<HTMLButtonElement>('[data-reveal]').forEach((button) => {
 				button.addEventListener('click', () => {
-					button.closest('figure')?.classList.remove('is-blurred');
-					button.remove();
+					const figure = button.closest<HTMLElement>('figure');
+					const pieceId = figure?.dataset.pieceId;
+					const figures = pieceId ? document.querySelectorAll<HTMLElement>(`figure[data-piece-id="${pieceId}"]`) : figure ? [figure] : [];
+					figures.forEach((each) => {
+						each.classList.remove('is-blurred');
+						each.querySelector('[data-reveal]')?.remove();
+					});
 				});
 			});
 
@@ -591,7 +702,10 @@ const previewUrl = new URL(preview.file, Astro.site);
 				zoomImage.alt = button.dataset.alt ?? '';
 				const artist = button.dataset.artist ?? '';
 				const artistUrl = button.dataset.artistUrl;
-				if (artistUrl) {
+				/* My own art has a title instead of a credit */
+				if (button.dataset.caption !== undefined) {
+					zoomCaption.textContent = button.dataset.caption;
+				} else if (artistUrl) {
 					const link = document.createElement('a');
 					link.className = 'artist-link';
 					link.href = artistUrl;
@@ -608,9 +722,11 @@ const previewUrl = new URL(preview.file, Astro.site);
 			};
 
 			const openZoom = (button: HTMLButtonElement) => {
-				const section = button.closest('section') ?? document;
-				zoomItems = [...section.querySelectorAll<HTMLButtonElement>('[data-zoom]')].filter((item) => !isBlurred(item));
-				showZoomItem(zoomItems.indexOf(button));
+				/* The arrows of the zoom go through the pieces of the same carousel, or else of the same section */
+				const section = button.closest('[data-zoom-group]') ?? button.closest('section') ?? document;
+				zoomItems = [...section.querySelectorAll<HTMLButtonElement>('[data-zoom]')].filter((item) => !isBlurred(item) && !item.closest('[data-carousel-copy]'));
+				/* A copy in a looping carousel opens the real piece */
+				showZoomItem(zoomItems.findIndex((item) => item.dataset.zoom === button.dataset.zoom));
 				zoomDialog.showModal();
 			};
 

@@ -223,5 +223,334 @@
 		"artist": "Dxmpl1ng",
 		"section": "stickers",
 		"gate": "explicit"
+	},
+	{
+		"id": "embroidery-img-3150",
+		"file": "embroidery-img-3150.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "embroidery-img-0659",
+		"file": "embroidery-img-0659.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "embroidery-img-1535",
+		"file": "embroidery-img-1535.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "embroidery-img-2800",
+		"file": "embroidery-img-2800.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "embroidery-img-2904",
+		"file": "embroidery-img-2904.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "embroidery-img-3845",
+		"file": "embroidery-img-3845.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "embroidery-img-4856",
+		"file": "embroidery-img-4856.webp",
+		"artist": "Jecisc",
+		"section": "embroidery",
+		"gate": "none"
+	},
+	{
+		"id": "pencil-img-5945",
+		"file": "pencil-img-5945.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Seahorse"
+	},
+	{
+		"id": "pencil-image0",
+		"file": "pencil-image0.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Dog"
+	},
+	{
+		"id": "pencil-image0-1",
+		"file": "pencil-image0-1.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Ratel"
+	},
+	{
+		"id": "pencil-image0-2",
+		"file": "pencil-image0-2.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Penguins"
+	},
+	{
+		"id": "pencil-image0-3",
+		"file": "pencil-image0-3.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Hyena"
+	},
+	{
+		"id": "pencil-image0-4",
+		"file": "pencil-image0-4.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Hummingbird"
+	},
+	{
+		"id": "pencil-image0-5",
+		"file": "pencil-image0-5.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Stick insect"
+	},
+	{
+		"id": "pencil-image0-6",
+		"file": "pencil-image0-6.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "arachnid",
+		"title": "Spider"
+	},
+	{
+		"id": "pencil-image0-7",
+		"file": "pencil-image0-7.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Hedgehog"
+	},
+	{
+		"id": "pencil-image0-8",
+		"file": "pencil-image0-8.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Monitor lizard"
+	},
+	{
+		"id": "pencil-image0-9",
+		"file": "pencil-image0-9.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Coelacanth"
+	},
+	{
+		"id": "pencil-image0-10",
+		"file": "pencil-image0-10.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Sable"
+	},
+	{
+		"id": "pencil-img-5470",
+		"file": "pencil-img-5470.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Turtle"
+	},
+	{
+		"id": "pencil-img-5560",
+		"file": "pencil-img-5560.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Whale"
+	},
+	{
+		"id": "pencil-img-5579",
+		"file": "pencil-img-5579.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Bat"
+	},
+	{
+		"id": "pencil-img-5612",
+		"file": "pencil-img-5612.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Rat"
+	},
+	{
+		"id": "pencil-img-5666",
+		"file": "pencil-img-5666.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Salamander"
+	},
+	{
+		"id": "pencil-img-5696",
+		"file": "pencil-img-5696.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Hermit crab"
+	},
+	{
+		"id": "pencil-img-5820",
+		"file": "pencil-img-5820.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Snowy owl"
+	},
+	{
+		"id": "pencil-img-5904",
+		"file": "pencil-img-5904.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Peacock"
+	},
+	{
+		"id": "pencil-img-6094",
+		"file": "pencil-img-6094.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Ferret"
+	},
+	{
+		"id": "pencil-img-6113",
+		"file": "pencil-img-6113.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Wren"
+	},
+	{
+		"id": "pencil-img-6713",
+		"file": "pencil-img-6713.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Fox"
+	},
+	{
+		"id": "pencil-img-6737",
+		"file": "pencil-img-6737.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Manatee"
+	},
+	{
+		"id": "pencil-img-6762",
+		"file": "pencil-img-6762.webp",
+		"artist": "Jecisc",
+		"section": "pencil",
+		"gate": "none",
+		"title": "Snail"
+	},
+	{
+		"id": "miniature-underworlds-spiteclaws-swarm",
+		"file": "miniature-underworlds-spiteclaws-swarm.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Spiteclaw's Swarm · Warhammer Underworlds"
+	},
+	{
+		"id": "miniature-blood-bowl-humans",
+		"file": "miniature-blood-bowl-humans.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Humans · Blood Bowl"
+	},
+	{
+		"id": "miniature-blood-bowl-khemri",
+		"file": "miniature-blood-bowl-khemri.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Khemri · Blood Bowl"
+	},
+	{
+		"id": "miniature-blood-bowl-lizardmen",
+		"file": "miniature-blood-bowl-lizardmen.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Lizardmen · Blood Bowl"
+	},
+	{
+		"id": "miniature-blood-bowl-skavens",
+		"file": "miniature-blood-bowl-skavens.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Skavens · Blood Bowl"
+	},
+	{
+		"id": "miniature-guild-ball-brewers",
+		"file": "miniature-guild-ball-brewers.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Brewers · Guild Ball"
+	},
+	{
+		"id": "miniature-guild-ball-masons",
+		"file": "miniature-guild-ball-masons.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Masons · Guild Ball"
+	},
+	{
+		"id": "miniature-underworlds-sepulchral-guards",
+		"file": "miniature-underworlds-sepulchral-guards.webp",
+		"artist": "Jecisc",
+		"section": "miniatures",
+		"gate": "none",
+		"title": "Sepulchral Guards · Warhammer Underworlds"
+	},
+	{
+		"id": "other-img-1482",
+		"file": "other-img-1482.webp",
+		"artist": "Jecisc",
+		"section": "other",
+		"gate": "none",
+		"title": "My replica of Marshall Lee's axe bass"
+	},
+	{
+		"id": "other-img-1258",
+		"file": "other-img-1258.webp",
+		"artist": "Jecisc",
+		"section": "other",
+		"gate": "none",
+		"title": "Marshall Lee in Adventure Time, the model for my replica"
 	}
 ]

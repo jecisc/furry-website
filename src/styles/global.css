@@ -25,6 +25,8 @@
 	--card-shadow: 0 0 #0000;
 	/* Opacity of the brick lines */
 	--brick-opacity: 0.8;
+	/* Width of the content on large screens */
+	--page-width: 94rem;
 	--heading-gradient: linear-gradient(100deg, var(--pink) 0%, var(--red) 55%, var(--belly) 100%);
 	--scale-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='45'%3E%3Cpath d='M13 0 L26 7.5 L26 22.5 L13 30 L0 22.5 L0 7.5 Z M13 30 V45' fill='none' stroke='%23ffffff' stroke-opacity='0.06'/%3E%3C/svg%3E");
 	--serif: Georgia, 'Times New Roman', serif;
@@ -139,7 +141,7 @@ button:focus-visible {
 
 .wrap {
 	width: 100%;
-	max-width: 66rem;
+	max-width: var(--page-width);
 	margin-inline: auto;
 	padding-inline: 1.25rem;
 }
@@ -255,8 +257,18 @@ button:focus-visible {
 		display: none;
 	}
 
+	/* On phones: the name and the toggle on the first row, the links spread on a row of their own below */
 	.theme-toggle {
+		margin-left: auto;
 		padding-right: 0.3rem;
+	}
+
+	.site-nav {
+		order: 1;
+		width: 100%;
+		justify-content: space-between;
+		margin-left: 0;
+		padding-bottom: 0.4rem;
 	}
 }
 
@@ -489,7 +501,7 @@ button:focus-visible {
 /* Brick dividers, for the red-brick houses of the north of France */
 .brick-divider {
 	height: 22px;
-	max-width: 62rem;
+	max-width: calc(var(--page-width) - 4rem);
 	margin-inline: auto;
 	background-color: var(--brick);
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='22'%3E%3Cpath d='M0 0.75H44M0 11.5H44M22 0V11.5M11 11.5V22M33 11.5V22' fill='none' stroke='%23000' stroke-opacity='0.55' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -762,6 +774,182 @@ button:focus-visible {
 
 .is-blurred .zoom {
 	cursor: default;
+}
+
+/*
+ * My art: one carousel per technique.
+ * The focused picture sits in the middle at full size; the others are smaller and dimmed on each side, so it reads as a row to browse.
+ * The track snaps each slide to its centre, so a swipe or the arrows always stop on a whole picture.
+ */
+.carousel-list {
+	display: grid;
+	gap: 3rem;
+}
+
+.carousel {
+	--slide-height: clamp(15rem, 38vw, 26rem);
+	min-width: 0;
+}
+
+.carousel-head {
+	display: flex;
+	align-items: baseline;
+	gap: 0.75rem 1rem;
+	margin-bottom: 0.5rem;
+}
+
+.carousel-head h3 {
+	margin: 0;
+	font-family: var(--serif);
+	font-size: 1.35rem;
+}
+
+.carousel-count {
+	color: var(--muted);
+	font-size: 0.85rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.carousel-stage {
+	position: relative;
+}
+
+.carousel-track {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 1rem 0;
+	list-style: none;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+	/* The edges fade out, a hint that there is more on each side */
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+	mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.carousel-track::-webkit-scrollbar {
+	display: none;
+}
+
+.carousel-slide {
+	flex: none;
+	/* Capped by the screen and not by the track: the room added on each side of the track would shrink a percentage */
+	width: min(calc(var(--ratio) * var(--slide-height)), 78vw);
+	scroll-snap-align: center;
+	opacity: 0.45;
+	scale: 0.78;
+	filter: saturate(0.6);
+	cursor: pointer;
+	transition:
+		scale 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+		opacity 0.45s ease,
+		filter 0.45s ease;
+}
+
+.carousel-slide.is-current {
+	opacity: 1;
+	scale: 1;
+	filter: none;
+	cursor: auto;
+}
+
+.carousel-slide:not(.is-current):hover {
+	opacity: 0.7;
+}
+
+.carousel-figure {
+	margin: 0;
+}
+
+.carousel-frame {
+	position: relative;
+	aspect-ratio: var(--ratio);
+	overflow: hidden;
+	border: 1px solid var(--line);
+	border-radius: 0.85rem;
+	background: var(--bg-raised);
+	box-shadow: var(--card-shadow);
+}
+
+.carousel-slide.is-current .carousel-frame {
+	border-color: color-mix(in srgb, var(--pink) 50%, var(--line));
+	box-shadow:
+		var(--card-shadow),
+		0 0 40px -12px var(--pink);
+}
+
+.carousel-frame img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.carousel-figure figcaption {
+	margin-top: 0.5rem;
+	color: var(--muted);
+	font-size: 0.9rem;
+	text-align: center;
+}
+
+/* Big round arrows over the sides of the track */
+.carousel-arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 3rem;
+	height: 3rem;
+	border: 1px solid var(--line);
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--surface) 88%, transparent);
+	box-shadow: 0 6px 20px -6px var(--shadow);
+	color: var(--ink);
+	font: inherit;
+	font-size: 1.8rem;
+	line-height: 1;
+	cursor: pointer;
+	transform: translateY(-50%);
+	backdrop-filter: blur(6px);
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease,
+		opacity 0.2s ease;
+}
+
+.carousel-arrow--previous {
+	left: 0.25rem;
+}
+
+.carousel-arrow--next {
+	right: 0.25rem;
+}
+
+.carousel-arrow:hover {
+	border-color: var(--pink);
+	box-shadow: 0 0 20px -4px var(--pink);
+}
+
+/* How far along the carousel the focused picture is */
+.carousel-progress {
+	width: min(14rem, 60%);
+	height: 4px;
+	margin: 0.5rem auto 0;
+	overflow: hidden;
+	border-radius: 4px;
+	background: var(--line);
+}
+
+.carousel-progress span {
+	display: block;
+	height: 100%;
+	border-radius: 4px;
+	background: var(--heading-gradient);
+	transition: width 0.35s ease;
 }
 
 /* Spotlight: one featured artwork shown large above the gallery */
@@ -1241,11 +1429,12 @@ button:focus-visible {
 }
 
 /* On wide screens, he peeks in the empty margin left of the content, where the pile is lower */
-@media (min-width: 82rem) {
+/* Only when the margins beside the page are wide enough for the peeker: the page width plus about 16rem */
+@media (min-width: 110rem) {
 	.peeker {
-		--peeker-width: min(9rem, (100% - 66rem) / 2 - 1.5rem);
+		--peeker-width: min(9rem, (100% - var(--page-width)) / 2 - 1.5rem);
 		--peeker-bottom: calc(var(--hoard-height) * 0.2);
-		left: calc((100% - 66rem) / 4 - var(--peeker-width) / 2);
+		left: calc((100% - var(--page-width)) / 4 - var(--peeker-width) / 2);
 		width: var(--peeker-width);
 	}
 }

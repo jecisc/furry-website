@@ -2,7 +2,7 @@
 
 My personal website, as Jecisc, a red dragon from the north of France. It is live at https://jecisc.fr.
 
-It is a single page with sections (Character, Art, Stickers, Links), a 404 page, a theme toggle, and a few easter eggs.
+It is a single page with sections (Character, Art, Stickers, My art, Links), a 404 page, a theme toggle, and a few easter eggs.
 
 ## Technology
 
@@ -33,7 +33,7 @@ public/                        Files served as they are
   preview.jpg                  The image shown when a link to the site is shared (my portrait by Yacrical)
   decor/                       BMO, animated, used as it is
 src/
-  assets/                      My original files (not in git, see below)
+  assets/                      My original files (not in git, see below), with my own art in Art/
   art/                         The web versions of the artworks and stickers (WebP, at most 1200 pixels)
   data/
     content.json               Texts of the page, colours of my palette, my social links, the sticker pack link
@@ -48,6 +48,7 @@ src/
     SiteHeader.astro           The header with the navigation and the theme toggle
     Gallery.astro              A grid of artworks with credits, the 18+ blur and the zoom
     Spotlight.astro            The big featured artwork at the top of the Art section
+    Carousel.astro             One carousel of my own art, with arrows, a counter and the zoom
     ArtistName.astro           An artist name, linked when artists.json has a link
     SocialIcon.astro           The logos of the social networks
     Hoard.astro                The pile of gold at the bottom of the window (generated, see below)
@@ -97,13 +98,16 @@ A new network also needs its logo and colour in `src/components/SocialIcon.astro
    }
    ```
 
-   - `section` is `art` or `stickers`.
-   - `gate` is `none`, or `explicit` to blur the image behind a "Peek (18+)" button. The blur is only a curtain: the file can still be opened by its address.
+   - `section` is where the piece goes: `art` for the art others made of me, `stickers`, or one of the carousels of my own art: `embroidery`, `pencil`, `miniatures` or `other`.
+   - `gate` is `none`, or a reason to blur the image until the visitor clicks: `explicit` shows "Peek (18+)", and `arachnid` shows "Spider ahead · Show". New reasons and their labels go in `gateLabels` in `src/data/artworks.ts`. The blur is only a curtain: the file can still be opened by its address.
+   - `title` (optional) is the caption of a piece of my own art, like "Seahorse". The art others made of me shows its artist instead.
    - `"featured": true` puts the piece in the big spotlight of the Art section. Only one piece should have it.
 
 4. If the artist is new, add their link to `src/data/artists.json`. The name must be written exactly as in `art.json`.
 
-The order of `art.json` is the order on the page.
+The order of `art.json` is the order on the page. In a carousel of my art, the first piece is the main picture, shown first.
+
+For my own art, `artist` is `Jecisc`. A new carousel needs a line in `myArtCarousels` in `src/pages/index.astro`, with its title and its `section`.
 
 There is nothing else to do for the image sizes. At each build, Astro makes smaller copies of every file in `src/art/` and each page loads the smallest copy that stays sharp, so the grids load about 0.5 to 1.3 MB instead of 3 MB. The zoom opens the full file. The sizes of these copies are in the components that show the images, next to the `<Image>` tags, with a comment on the width the image is shown at.
 
@@ -112,6 +116,8 @@ There is nothing else to do for the image sizes. At each build, Astro makes smal
 The portrait is picked at random at each visit. The list of ids is `heroChoices` at the top of `src/pages/index.astro`.
 
 ### Change the colours
+
+The width of the page on large screens is `--page-width` at the top of `src/styles/global.css`.
 
 The colours of the site are variables at the top of `src/styles/global.css`: `:root` for the dark theme (the default), `:root[data-theme='light']` for the light theme. Changing a variable changes it everywhere.
 

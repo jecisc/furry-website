@@ -1,0 +1,53 @@
+---
+import { Image } from 'astro:assets';
+import { gateLabelOf, type Artwork } from '../data/artworks';
+
+interface Props {
+	/** Title above the carousel, for example "Embroidery" */
+	title: string;
+	/** The pieces in their order: the first one is the main picture, shown first */
+	pieces: Artwork[];
+}
+
+const { title, pieces } = Astro.props;
+---
+
+{/* The arrows, the focus, the progress and the zoom are handled by the script in Layout.astro. Without JavaScript, the track still scrolls by hand. */}
+<div class="carousel" data-carousel data-zoom-group>
+	<div class="carousel-head">
+		<h3>{title}</h3>
+		<span class="carousel-count" aria-live="polite"><span data-carousel-current>1</span> / {pieces.length}</span>
+	</div>
+	<div class="carousel-stage">
+		<ul class="carousel-track" aria-label={title} tabindex="0">
+			{
+				pieces.map((piece, index) => {
+					const gateLabel = gateLabelOf(piece);
+					const caption = 'title' in piece ? piece.title : undefined;
+					const alt = caption ? `${title}: ${caption}, by me` : `${title} by me`;
+					return (
+						<li class:list={['carousel-slide', index === 0 && 'is-current']} style={`--ratio: ${(piece.image.width / piece.image.height).toFixed(4)}`}>
+							<figure class:list={['carousel-figure', gateLabel && 'is-blurred']} data-piece-id={piece.id}>
+								<div class="carousel-frame">
+									<button type="button" class="zoom" data-zoom={piece.image.src} data-alt={alt} data-caption={caption ?? ''}>
+										{/* The focused slide is about 26rem high, so at most about 40rem wide, and 78% of the width on phones */}
+										<Image src={piece.image} widths={[600, 1200]} sizes="(max-width: 40rem) 78vw, 40rem" alt={alt} loading="lazy" />
+									</button>
+									{gateLabel && (
+										<button type="button" class="reveal" data-reveal>
+											{gateLabel}
+										</button>
+									)}
+								</div>
+								{caption && <figcaption>{caption}</figcaption>}
+							</figure>
+						</li>
+					);
+				})
+			}
+		</ul>
+		<button type="button" class="carousel-arrow carousel-arrow--previous" data-carousel-previous aria-label={`Previous ${title.toLowerCase()}`}>‹</button>
+		<button type="button" class="carousel-arrow carousel-arrow--next" data-carousel-next aria-label={`Next ${title.toLowerCase()}`}>›</button>
+	</div>
+	<div class="carousel-progress" aria-hidden="true"><span data-carousel-progress style={`width: ${100 / pieces.length}%`}></span></div>
+</div>

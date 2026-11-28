@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import ArtistName from './ArtistName.astro';
 import artists from '../data/artists.json';
-import type { Artwork } from '../data/artworks';
+import { gateLabelOf, type Artwork } from '../data/artworks';
 
 interface Props {
 	pieces: Artwork[];
@@ -24,7 +24,8 @@ const thumbnail = layout === 'grid' ? { widths: [240, 480], sizes: '(max-width: 
 <ul class:list={['gallery', `gallery--${layout}`]}>
 	{
 		pieces.map((piece) => {
-			const isGated = piece.gate !== 'none';
+			const gateLabel = gateLabelOf(piece);
+			const isGated = gateLabel !== undefined;
 			const artist = piece.artist.trim();
 			const alt = `Artwork of Jecisc by ${artist}`;
 			return (
@@ -36,7 +37,7 @@ const thumbnail = layout === 'grid' ? { widths: [240, 480], sizes: '(max-width: 
 							</button>
 							{isGated && (
 								<button type="button" class="reveal" data-reveal>
-									Peek (18+)
+									{gateLabel}
 								</button>
 							)}
 						</div>

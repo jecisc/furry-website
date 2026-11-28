@@ -21,3 +21,14 @@ export const artworks = artPieces.map((piece) => ({ ...piece, image: imageOf(pie
 export type Artwork = (typeof artworks)[number];
 
 export const artworkById = (id: string) => artworks.find((piece) => piece.id === id);
+
+/*
+ * The "gate" of a piece in art.json: "none", or a reason to blur it until the visitor chooses to see it.
+ * The label is the button shown on the blurred image.
+ */
+const gateLabels: Record<string, string> = {
+	explicit: 'Peek (18+)',
+	arachnid: 'Spider ahead · Show',
+};
+
+export const gateLabelOf = (piece: Artwork) => (piece.gate === 'none' ? undefined : (gateLabels[piece.gate] ?? 'Show'));
