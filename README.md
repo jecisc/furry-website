@@ -2,7 +2,7 @@
 
 My personal website, as Jecisc, a red dragon from the north of France. It is live at https://jecisc.fr.
 
-It is a single page with sections (Character, Art, Stickers, My art, Links), a 404 page, a theme toggle, and a few easter eggs.
+It is a single page with sections (Character, Links, Art, Stickers, My art), a 404 page, a theme toggle, and a few easter eggs.
 
 ## Technology
 

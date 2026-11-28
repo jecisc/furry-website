@@ -166,6 +166,43 @@ const year = new Date().getFullYear();
 
 		<div class="brick-divider" aria-hidden="true"></div>
 
+		<section class="section" id="links">
+			<div class="wrap">
+				<p class="eyebrow">Find me</p>
+				<h2 class="gradient-text">Links</h2>
+				<p class="section-intro">{content.linksIntro}</p>
+				<ul class="link-list">
+					{content.socials.map((social) => {
+						const note = 'note' in social ? `${social.note} · ` : '';
+						const details = (
+							<Fragment>
+								<SocialIcon network={social.network} />
+								<span class="link-network">{social.network}</span>
+								<span class="link-handle">{social.handle}</span>
+							</Fragment>
+						);
+						return (
+							<li>
+								{'url' in social ? (
+									<a class="link-card" href={social.url} target="_blank" rel="me noopener noreferrer">
+										{details}
+										<span class="link-action">{note}Open profile</span>
+									</a>
+								) : (
+									<button type="button" class="link-card" data-copy={social.handle} aria-label={`Copy ${social.network} username ${social.handle}`}>
+										{details}
+										<span class="link-action" data-copy-feedback>{note}Copy username</span>
+									</button>
+								)}
+							</li>
+						);
+					})}
+				</ul>
+			</div>
+		</section>
+
+		<div class="brick-divider" aria-hidden="true"></div>
+
 		<section class="section" id="art">
 			<div class="wrap">
 				<p class="eyebrow">The art hoard</p>
@@ -203,42 +240,6 @@ const year = new Date().getFullYear();
 			</div>
 		</section>
 
-		<div class="brick-divider" aria-hidden="true"></div>
-
-		<section class="section" id="links">
-			<div class="wrap">
-				<p class="eyebrow">Find me</p>
-				<h2 class="gradient-text">Links</h2>
-				<p class="section-intro">{content.linksIntro}</p>
-				<ul class="link-list">
-					{content.socials.map((social) => {
-						const note = 'note' in social ? `${social.note} · ` : '';
-						const details = (
-							<Fragment>
-								<SocialIcon network={social.network} />
-								<span class="link-network">{social.network}</span>
-								<span class="link-handle">{social.handle}</span>
-							</Fragment>
-						);
-						return (
-							<li>
-								{'url' in social ? (
-									<a class="link-card" href={social.url} target="_blank" rel="me noopener noreferrer">
-										{details}
-										<span class="link-action">{note}Open profile</span>
-									</a>
-								) : (
-									<button type="button" class="link-card" data-copy={social.handle} aria-label={`Copy ${social.network} username ${social.handle}`}>
-										{details}
-										<span class="link-action" data-copy-feedback>{note}Copy username</span>
-									</button>
-								)}
-							</li>
-						);
-					})}
-				</ul>
-			</div>
-		</section>
 	</main>
 
 	{
