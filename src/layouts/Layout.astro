@@ -508,12 +508,29 @@ const previewUrl = new URL(preview.file, Astro.site);
 						runAwayFrom(event.clientX, event.clientY);
 					}
 				});
+				/*
+				 * A tap on him still ends with a click, and he has already jumped away when it comes: the click would land on whatever was below him (a link, a picture to zoom…).
+				 * So the click that follows a tap on him is swallowed.
+				 */
+				let swallowClickUntil = 0;
+				document.addEventListener(
+					'click',
+					(event) => {
+						if (performance.now() < swallowClickUntil) {
+							event.preventDefault();
+							event.stopPropagation();
+							swallowClickUntil = 0;
+						}
+					},
+					true,
+				);
 				/* Without hover on touch screens, a tap is the attempt: he dodges it unless he is still catching his breath */
 				peeker.addEventListener('pointerdown', (event) => {
 					event.preventDefault();
 					if (peekerState === 'hidden' || peekerState === 'caught') {
 						return;
 					}
+					swallowClickUntil = performance.now() + 700;
 					if (event.pointerType === 'touch' && canFlee()) {
 						runAwayFrom(event.clientX, event.clientY);
 					} else {
